@@ -44,6 +44,8 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "@material/mwc-list": "^0.17.2",
+    "@mothepro/fancy-p2p": "^0.0.14",
     "lit-element": "^2.3.1"
   }
 }

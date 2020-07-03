@@ -1,8 +1,39 @@
-
 {
-	"imports": {
-		"lit-element/": "https://unpkg.com/lit-element@2.3.1/",
-		"lit-element": "https://unpkg.com/lit-element@2.3.1/lit-element.js"
-	}
+  "imports": {
+    "@material/base/": "https://unpkg.com/@material/base@7.0.0/",
+    "@material/base": "https://unpkg.com/@material/base@7.0.0/dist/mdc.base.js",
+    "@material/dom/": "https://unpkg.com/@material/dom@7.0.0/",
+    "@material/dom": "https://unpkg.com/@material/dom@7.0.0/dist/mdc.dom.js",
+    "@material/list/": "https://unpkg.com/@material/list@7.0.0/",
+    "@material/list": "https://unpkg.com/@material/list@7.0.0/dist/mdc.list.js",
+    "@material/ripple/": "https://unpkg.com/@material/ripple@7.0.0/",
+    "@material/ripple": "https://unpkg.com/@material/ripple@7.0.0/dist/mdc.ripple.js",
+    "@material/mwc-base/": "https://unpkg.com/@material/mwc-base@0.15.0/",
+    "@material/mwc-base": "https://unpkg.com/@material/mwc-base@0.15.0/mwc-base.js",
+    "@material/mwc-list/": "https://unpkg.com/@material/mwc-list@0.15.0/",
+    "@material/mwc-list": "https://unpkg.com/@material/mwc-list@0.15.0/mwc-list.js",
+    "@material/mwc-ripple/": "https://unpkg.com/@material/mwc-ripple@0.15.0/",
+    "@material/mwc-ripple": "https://unpkg.com/@material/mwc-ripple@0.15.0/mwc-ripple.js",
+    "@material/mwc-icon-button/": "https://unpkg.com/@material/mwc-icon-button@0.15.0/",
+    "@material/mwc-icon-button": "https://unpkg.com/@material/mwc-icon-button@0.15.0/mwc-icon-button.js",
+    "@mothepro/loose-set/": "https://unpkg.com/@mothepro/loose-set@1.0.0/",
+    "@mothepro/loose-set": "https://unpkg.com/@mothepro/loose-set@1.0.0/dist/esm/index.js",
+    "@mothepro/loose-map/": "https://unpkg.com/@mothepro/loose-map@1.0.0/",
+    "@mothepro/loose-map": "https://unpkg.com/@mothepro/loose-map@1.0.0/dist/esm/index.js",
+    "@mothepro/fancy-p2p/": "https://unpkg.com/@mothepro/fancy-p2p@0.0.14/",
+    "@mothepro/fancy-p2p": "https://unpkg.com/@mothepro/fancy-p2p@0.0.14/dist/esm/index.js",
+    "@mothepro/ez-rtc/": "https://unpkg.com/@mothepro/ez-rtc@0.1.0/",
+    "@mothepro/ez-rtc": "https://unpkg.com/@mothepro/ez-rtc@0.1.0/dist/esm/index.js",
+    "fancy-emitter/": "https://unpkg.com/fancy-emitter@1.5.1/",
+    "fancy-emitter": "https://unpkg.com/fancy-emitter@1.5.1/dist/esm/index.js",
+    "lit-element/": "https://unpkg.com/lit-element@2.3.1/",
+    "lit-element": "https://unpkg.com/lit-element@2.3.1/lit-element.js",
+    "lit-html/": "https://unpkg.com/lit-html@1.2.1/",
+    "lit-html": "https://unpkg.com/lit-html@1.2.1/lit-html.js",
+    "std:kv-storage": [
+      "std:kv-storage",
+      "https://unpkg.com/kv-storage-polyfill@2.0.0/dist/kv-storage-polyfill.mjs"
+    ],
+    "tslib": "https://unpkg.com/tslib@2.0.0/tslib.es6.js"
+  }
 }
-
