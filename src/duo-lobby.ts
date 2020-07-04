@@ -136,7 +136,6 @@ export default class extends LitElement {
                 required
                 type="text"
                 label="Your Name"
-                id="field"
                 maxlength=${this.maxlength}
                 value=${client.name}
                 @keydown=${this.nameChange}

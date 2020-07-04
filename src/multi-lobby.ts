@@ -11,6 +11,9 @@ import '@material/mwc-icon-button'
 import '@material/mwc-icon'
 import '@material/mwc-fab'
 import '@material/mwc-textfield'
+import '@material/mwc-snackbar'
+
+type SnackBarClosingEvent = CustomEvent<{ reason?: string }>
 
 declare global {
   interface HTMLElementEventMap {
@@ -55,11 +58,16 @@ export default class extends LitElement {
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 10
 
-  @internalProperty({ })
+  @internalProperty({})
   private chosen: Set<Client> = new Set
 
   @internalProperty()
-  proposals: {
+  proposal?: {
+    members: Client[]
+    action?: (accept: boolean) => void
+  }
+
+  private readonly proposalQueue: {
     members: Client[]
     action?: (accept: boolean) => void
   }[] = []
@@ -115,10 +123,15 @@ export default class extends LitElement {
   private bindClient = async (client: Client) => {
     this.clients = [...this.clients, client]
     for await (const { members, action, ack } of client.proposals) {
-      this.proposals = [...this.proposals, {members, action}]
+      if (action)
+        if (this.proposal) // Add to queue
+          this.proposalQueue.push({ members, action })
+        else
+          this.proposal = { members, action }
 
       // Update UI every time a client accepts or rejects the proposal
       ack.on(() => this.requestUpdate())
+        // TODO remove from queue
         .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error })))
         .finally(() => this.requestUpdate())
     }
@@ -139,6 +152,15 @@ export default class extends LitElement {
 
   private selected({ detail: { index } }: MultiSelectedEvent) {
     this.chosen = new Set(this.clients.filter(({ isYou }, i) => !isYou && index.has(i)))
+  }
+
+  /** Accept/Reject proposal then remove it from list */
+  private handleProposal({ detail: { reason } }: SnackBarClosingEvent) {
+    if (this.proposal) { // this should be true in this function...
+      this.proposal.action!(reason == 'action')
+      if (reason != 'action' && this.proposalQueue.length) // refill queue
+        this.proposal = this.proposalQueue.shift()
+    }
   }
 
   protected readonly render = () => html`
@@ -166,7 +188,6 @@ export default class extends LitElement {
                 required
                 type="text"
                 label="Your Name"
-                id="field"
                 maxlength=${this.maxlength}
                 value=${client.name}
                 @keydown=${this.nameChange}
@@ -181,17 +202,28 @@ export default class extends LitElement {
           ${client.name}
         </mwc-check-list-item>`)}${
     this.clients.length == 1
-    ? html`
+      ? html`
       <slot name="alone">
         <mwc-list-item part="client is-alone" class="alone" noninteractive>
           Waiting for others to join this lobby.
         </mwc-list-item>
       </slot>` : ''}
     </mwc-list>
+    ${this.proposal ? html`
+      <mwc-snackbar
+        open
+        timeoutMs=${10000}
+        labelText="Join group with ${this.proposal.members.map(({ name }) => name).join(', ')}"
+        @MDCSnackbar:closing=${this.handleProposal}>
+        <mwc-icon-button slot="action" icon="check" label="accept"></mwc-icon-button>
+        <mwc-icon-button slot="dismiss" icon="close" label="reject"></mwc-icon-button>
+      </mwc-snackbar>` : ''}
     <mwc-fab
       icon="done"
       ?disabled=${!this.canPropose}
       label="Make Group"
-      @click=${() => this.canPropose && this.dispatchEvent(new CustomEvent('proposal', { detail: this.chosen }))}
+      @click=${() => this.canPropose
+      && this.dispatchEvent(new CustomEvent('proposal', { detail: this.chosen }))
+      && Promise.resolve().then(() => this.requestUpdate()) /* Update next tick to disable button */}
     ></mwc-fab>`
 }
