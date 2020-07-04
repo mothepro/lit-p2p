@@ -1,7 +1,7 @@
 import storage from 'std:kv-storage'
 import { LitElement, html, customElement, property } from 'lit-element'
 import P2P, { State } from '@mothepro/fancy-p2p'
-import type { NameChangeEvent } from './duo-lobby.js'
+import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 
 import './duo-lobby.js'
 
@@ -102,23 +102,29 @@ export default class extends LitElement {
     this.connect(this.name)
   }
 
+  private proposal({ detail }: ProposalEvent) {
+    try {
+      this.p2p?.proposeGroup(...detail)
+    } catch (error) {
+      this.dispatchEvent(new ErrorEvent('p2p-error', {error}))
+    }
+  }
+
   protected readonly render = () => {
     if (this.p2p?.stateChange.isAlive)
       switch (this.p2p!.state) {
         case State.LOBBY:
-          return html`
-            <slot name="lobby"
-              .lobby-connection=${this.p2p.lobbyConnection}
+          return this.minPeers == 1 && this.maxPeers == 1
+            ? html`
+            <p2p-duo-lobby
+              name=${this.name}
+              .connection=${this.p2p.lobbyConnection}
+              .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
               @name-change=${this.nameChanged}
-            >${this.minPeers == 1 && this.maxPeers == 1
-              ? html`
-              <p2p-duo-lobby
-                name=${this.name}
-                .lobby-connection=${this.p2p.lobbyConnection}
-              ></p2p-duo-lobby>`
-              : '???'
-            }</slot>`
+              @proposal=${this.proposal}
+            ></p2p-duo-lobby>`
+            : 'not supported yet'
 
         case State.READY:
           return html`

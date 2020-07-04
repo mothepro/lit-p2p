@@ -9,11 +9,13 @@ import '@material/mwc-icon-button'
 import '@material/mwc-icon'
 
 export type NameChangeEvent = CustomEvent<string>
+export type ProposalEvent = CustomEvent<Client[]>
 
 declare global {
   interface HTMLElementEventMap {
     'p2p-error': ErrorEvent
     'name-change': NameChangeEvent
+    proposal: ProposalEvent
   }
 }
 
@@ -31,8 +33,11 @@ export default class extends LitElement {
   @property({ type: Number })
   maxlength = 100
 
-  @property({ type: Object })
+  @property({ attribute: false })
   connection?: SafeListener<Client>
+
+  @property({ attribute: false })
+  groupExists?: (...clients: Client[]) => boolean
 
   /** Others connected to the lobby. */
   @internalProperty()
@@ -41,7 +46,7 @@ export default class extends LitElement {
     action?: (accept: boolean) => void
   }[] = []
 
-  @internalProperty()
+  @property({ type: Boolean, reflect: true })
   private editing = false
 
   static readonly styles = css`
@@ -101,29 +106,31 @@ export default class extends LitElement {
           part="client is-you"
           tabindex=${index}
           hasMeta
-          @request-selected=${() => this.editing = true}>
-          ${this.editing && this.canChangeName
-          ? html`
-            <form @submit=${this.nameChange}>
-              <input
-                part="edit-name"
-                type="text"
-                autofocus 
-                name="name"
-                placeholder="Your name"
-                maxlength=${this.maxlength}
-                value=${client.name} />
-            </form>`
+          @request-selected=${() => this.editing = true}>${
+        this.canChangeName
+          ? this.editing
+            ? html`
+              <form @submit=${this.nameChange}>
+                  <input
+                    part="edit-name"
+                    type="text"
+                    autofocus 
+                    name="name"
+                    placeholder="Your name"
+                    maxlength=${this.maxlength}
+                    value=${client.name} />
+                </form>`
+            : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
           : client.name}
-          <mwc-icon part="edit-button" slot="meta">create</mwc-icon>
-        </mwc-list-item>`
+      </mwc-list-item>`
       : html`
         <mwc-list-item
           part="client is-other"
           tabindex=${index}
           ?hasMeta=${!action}
-          ?noninteractive=${!action && this.p2p!.groupExists(client)}
-          @request-selected=${({ detail: { selected } }: CustomEvent<RequestSelectedDetail>) => console.log(selected, !action, !this.p2p!.groupExists(client), selected && !action && !this.p2p!.groupExists(client) && this.p2p!.proposeGroup(client))}
+          ?noninteractive=${!action && this.groupExists!(client)}
+          @request-selected=${({ detail: { selected } }: CustomEvent<RequestSelectedDetail>) => {/* This is activated twice on rejection unforntuatley... `` */ }}
+          @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}
           >
           ${client.name}
           ${action
@@ -144,13 +151,9 @@ export default class extends LitElement {
               action(false)
               this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
             }}></mwc-icon-button>`
-          : this.p2p!.groupExists(client)
+          : this.groupExists!(client)
             ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
             : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
         </mwc-list-item>`)}
     </mwc-list>`
 }
-
-
-//@request-selected=${/** This is activated twice on rejection unforntuatley... */ }
-// @click=${ () => !action && !this.p2p!.groupExists(client) && this.p2p!.proposeGroup(client) }>
