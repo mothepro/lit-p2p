@@ -1,6 +1,6 @@
 {
-  "name": "p2p-duo-lobby",
-  "description": "A web component to simplify finding peers using fancy-p2p and Material UI",
+  "name": "lit-p2p",
+  "description": "Web components to simplify finding peers using fancy-p2p and Material UI.",
   "author": "Maurice Prosper",
   "version": "0.0.0",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/mothepro/p2p-duo-lobby",
+  "repository": "https://github.com/mothepro/lit-p2p",
   "scripts": {
     "build": "npm run build:npm && npm run build:esm",
     "test": "echo \"No tests... yet.\"",
