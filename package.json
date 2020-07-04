@@ -44,8 +44,10 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "@material/mwc-icon": "^0.17.2",
+    "@material/mwc-icon-button": "^0.17.2",
     "@material/mwc-list": "^0.17.2",
-    "@mothepro/fancy-p2p": "^0.0.14",
+    "@mothepro/fancy-p2p": "^0.0.15",
     "lit-element": "^2.3.1"
   }
 }

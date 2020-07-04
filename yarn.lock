@@ -100,6 +100,23 @@
     lit-html "^1.1.2"
     tslib "^1.10.0"
 
+"@material/mwc-icon-button@^0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@material/mwc-icon-button/-/mwc-icon-button-0.17.2.tgz#b068c3ea7b6c2e92312ab9ec20baac0cff3dfb20"
+  integrity sha512-kA0RaOmE35yaTCMlqZT7m6A/lJfcsgBKnutAQlhzHlwANTDbWApVi9CjvvN4568EXlBfvfCEL7oUdMDy219K0Q==
+  dependencies:
+    "@material/mwc-ripple" "^0.17.2"
+    lit-element "^2.3.0"
+    tslib "^1.10.0"
+
+"@material/mwc-icon@^0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@material/mwc-icon/-/mwc-icon-0.17.2.tgz#06f019525001b3e42e18106fc6f321b4c8ca0b3c"
+  integrity sha512-9EpoLbn82RD5Wsxv0J7o1hTyn+WLfC1tdaTBvDmkRJZhfFheXYKUWNQXWrra0I/BpmojOGvijStOH0rga513WA==
+  dependencies:
+    lit-element "^2.3.0"
+    tslib "^1.10.0"
+
 "@material/mwc-list@^0.17.2":
   version "0.17.2"
   resolved "https://registry.yarnpkg.com/@material/mwc-list/-/mwc-list-0.17.2.tgz#f09fc4cf1a0ca03d097938c7bcc75682cec39eb3"
@@ -216,17 +233,17 @@
   dependencies:
     fancy-emitter "^1.5.1"
 
-"@mothepro/fancy-p2p@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.14.tgz#316e1a1092a0afbac364e79ea3e74174b12e6161"
-  integrity sha512-byuiJW8GQBIefonHi4qAJapy6e/RfW9iL7wphXzQDNeeVA4+2JBJVg3UQCLFPMKLALDT5yIOYkHsRiyMdh3r+w==
+"@mothepro/fancy-p2p@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.15.tgz#b930867692d3a0766e8a8d7f849c690d762617f9"
+  integrity sha512-PqUJBpZqscLLS0TWUryGz4GkOR48IXLYVQ50GFm0lvkKxVQo5hxMuP6uBGnVnD532e1w+/HFu2cBcDxSDt2Ygw==
   dependencies:
     "@mothepro/ez-rtc" "^0.1.0"
-    "@mothepro/signaling-lobby" "^0.3.1"
-    "@types/ws" "^7.2.5"
+    "@mothepro/signaling-lobby" "^0.3.3"
+    "@types/ws" "^7.2.6"
     fancy-emitter "^1.5.1"
 
-"@mothepro/signaling-lobby@^0.3.1":
+"@mothepro/signaling-lobby@^0.3.3":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@mothepro/signaling-lobby/-/signaling-lobby-0.3.3.tgz#6731c719544ab527eb3e5963efe1baf727a732b0"
   integrity sha512-ZLIbwOTLYixrgnhBNOfnKxBnG3yAoco8E1upf7qfSheeyT822Tg53uPNbZ+bsFWcWhM3LWf8vhi5WKPCUI4CAg==
@@ -395,7 +412,7 @@
   resolved "https://registry.yarnpkg.com/@types/sinonjs__fake-timers/-/sinonjs__fake-timers-6.0.1.tgz#681df970358c82836b42f989188d133e218c458e"
   integrity sha512-yYezQwGWty8ziyYLdZjwxyMb0CZR49h8JALHGrxjQHWlqGgc8kLdHEgWrgL0uZ29DMvEVBDnHU2Wg36zKSIUtA==
 
-"@types/ws@^7.2.5":
+"@types/ws@^7.2.6":
   version "7.2.6"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.2.6.tgz#516cbfb818310f87b43940460e065eb912a4178d"
   integrity sha512-Q07IrQUSNpr+cXU4E4LtkSIBPie5GLZyyMC1QtQYRLWz701+XcoVygGUZgvLqElq1nU4ICldMYPnexlBsg3dqQ==
