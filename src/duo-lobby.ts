@@ -55,6 +55,10 @@ export default class extends LitElement {
       display: none;
     }
 
+    :host .alone {
+      justify-content: center;
+    }
+
     :host .tall {
       height: 85px;
     }
@@ -99,14 +103,16 @@ export default class extends LitElement {
     this.clients = this.clients.filter(({ client: currentClient }) => currentClient != client)
   }
 
-  private nameChange(event: Event) {
-    event.preventDefault()
-    const detail = new FormData(event.target! as HTMLFormElement).get('name')?.toString() ?? ''
-    if (this.name != detail) {
-      this.name = detail
-      this.dispatchEvent(new CustomEvent('name-change', { detail }))
+  /** Do not use form submission since that event doesn't pass through shadow dom */
+  private nameChange({ target, key }: KeyboardEvent) {
+    if (key == 'Enter') {
+      const detail = (target as HTMLInputElement).value
+      if (this.name != detail) {
+        this.name = detail
+        this.dispatchEvent(new CustomEvent('name-change', { detail }))
+      }
+      this.editing = false
     }
-    return this.editing = false
   }
 
   protected readonly render = () => html`
@@ -123,21 +129,19 @@ export default class extends LitElement {
         this.canChangeName
           ? this.editing
             ? html`
-              <form @submit=${console.warn}>
-                <mwc-textfield
-                  outlined
-                  charCounter
-                  fullwidth
-                  required
-                  type="text"
-                  name="name"
-                  label="Your Name"
-                  id="field"
-                  maxlength=${this.maxlength}
-                  value=${client.name}
-                  @blur=${() => this.editing = false}
-                ></mwc-textfield>
-              </form>`
+              <mwc-textfield
+                outlined
+                charCounter
+                fullwidth
+                required
+                type="text"
+                label="Your Name"
+                id="field"
+                maxlength=${this.maxlength}
+                value=${client.name}
+                @keydown=${this.nameChange}
+                @blur=${() => this.editing = false}
+              ></mwc-textfield>`
             : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
           : client.name}
       </mwc-list-item>
