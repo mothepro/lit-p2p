@@ -1,15 +1,15 @@
 import { LitElement, html, customElement, property, css, internalProperty } from 'lit-element'
 import type { SafeListener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
-import type { RequestSelectedDetail } from '@material/mwc-list/mwc-list-item.js'
+import type { MultiSelectedEvent } from '@material/mwc-list/mwc-list-foundation'
+import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 
 import '@material/mwc-list'
 import '@material/mwc-list/mwc-list-item.js'
+import '@material/mwc-list/mwc-check-list-item.js'
 import '@material/mwc-icon-button'
 import '@material/mwc-icon'
-
-export type NameChangeEvent = CustomEvent<string>
-export type ProposalEvent = CustomEvent<Client[]>
+import '@material/mwc-fab'
 
 declare global {
   interface HTMLElementEventMap {
@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-@customElement('p2p-duo-lobby')
+@customElement('p2p-multi-lobby')
 export default class extends LitElement {
   /** Name of the user. An anonymous one may be set be the server if left unassigned. */
   @property({ type: String, reflect: true })
@@ -34,34 +34,58 @@ export default class extends LitElement {
   maxlength = 100
 
   @property({ attribute: false })
-  connection?: SafeListener<Client>
+  connection!: SafeListener<Client>
 
   @property({ attribute: false })
-  groupExists?: (...clients: Client[]) => boolean
+  groupExists!: (...clients: Client[]) => boolean
 
   /** Others connected to the lobby. */
   @internalProperty()
-  private clients: {
-    client: Client
-    action?: (accept: boolean) => void
-  }[] = []
+  private clients: Client[] = []
 
   @property({ type: Boolean, reflect: true })
   private editing = false
+
+  /** The minimum number of other connections that can be made in the lobby. */
+  @property({ type: Number, attribute: 'min-peers' })
+  minPeers = 1
+
+  /** The maximum number of other connections that can be made in the lobby. */
+  @property({ type: Number, attribute: 'max-peers' })
+  maxPeers = 10
+
+  @internalProperty({ })
+  private chosen: Set<Client> = new Set
+
+  @internalProperty()
+  proposals: {
+    members: Client[]
+    action?: (accept: boolean) => void
+  }[] = []
+
+  get canPropose() {
+    return this.minPeers <= this.chosen.size
+      && this.chosen.size <= this.maxPeers
+      && !this.groupExists(...this.chosen)
+  }
 
   static readonly styles = css`
     :host([hidden]) {
       display: none;
     }
-    
-    :host mwc-icon-button {
-      position: absolute;
-      top: 0;
-      right: 0;
+
+    :host .alone {
+      text-align: center;
     }
-    
-    :host mwc-icon-button[part="reject"] {
-      margin-right: var(--mdc-icon-button-size, 48px);
+
+    :host mwc-fab[disabled] {
+      --mdc-theme-on-secondary: white;
+      --mdc-theme-secondary: lightgrey;
+      --mdc-fab-box-shadow: none;
+      --mdc-fab-box-shadow-hover: none;
+      --mdc-fab-box-shadow-active: none;
+      --mdc-ripple-fg-opacity: 0;
+      cursor: default !important;
     }`
 
   protected async updated(changed: Map<string | number | symbol, unknown>) {
@@ -73,19 +97,16 @@ export default class extends LitElement {
   }
 
   private bindClient = async (client: Client) => {
-    this.clients = [...this.clients, { client }]
-    for await (const { action, ack } of client.proposals) {
-      this.clients = this.clients.map(item =>
-        item.client == client
-          ? { client, action }
-          : item)
+    this.clients = [...this.clients, client]
+    for await (const { members, action, ack } of client.proposals) {
+      this.proposals = [...this.proposals, {members, action}]
 
       // Update UI every time a client accepts or rejects the proposal
       ack.on(() => this.requestUpdate())
         .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error })))
         .finally(() => this.requestUpdate())
     }
-    this.clients = this.clients.filter(({ client: currentClient }) => currentClient != client)
+    this.clients = this.clients.filter(currentClient => currentClient != client)
   }
 
   private nameChange(event: Event) {
@@ -98,8 +119,16 @@ export default class extends LitElement {
     return this.editing = false
   }
 
+  private selected({ detail: { index } }: MultiSelectedEvent) {
+    this.chosen = new Set(this.clients.filter((_, i) => index.has(i)))
+  }
+
   protected readonly render = () => html`
-    <mwc-list part="client-list" rootTabbable activatable>${this.clients.map(({ client, action }, index) =>
+    <mwc-list
+      part="client-list"
+      multi
+      rootTabbable
+      @selected=${this.selected}>${this.clients.map((client, index) =>
     client.isYou
       ? html`
         <mwc-list-item
@@ -126,43 +155,21 @@ export default class extends LitElement {
       </mwc-list-item>
       <li divider padded role="separator"></li>`
       : html`
-        <mwc-list-item
-          part="client is-other"
-          tabindex=${index}
-          ?hasMeta=${!action}
-          ?noninteractive=${!action && this.groupExists!(client)}
-          @request-selected=${({ detail: { selected } }: CustomEvent<RequestSelectedDetail>) => {/* This is activated twice on rejection unforntuatley... `` */ }}
-          @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}
-          >
+        <mwc-check-list-item part="client is-other" tabindex=${index}>
           ${client.name}
-          ${action
-          ? html`
-            <mwc-icon-button
-              part="accept"
-              icon="check_circle"
-              label="Aceept"
-              @click=${() => {
-              action(true)
-              this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
-            }}></mwc-icon-button>
-            <mwc-icon-button
-              part="reject"
-              icon="cancel"
-              label="Reject"
-              @click=${() => {
-              action(false)
-              this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
-            }}></mwc-icon-button>`
-          : this.groupExists!(client)
-            ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
-            : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
-        </mwc-list-item>`)}${
+        </mwc-check-list-item>`)}${
     this.clients.length == 1
     ? html`
       <slot name="alone">
-        <mwc-list-item part="client is-alone" noninteractive>
+        <mwc-list-item part="client is-alone" class="alone" noninteractive>
           Waiting for others to join this lobby.
         </mwc-list-item>
       </slot>` : ''}
-    </mwc-list>`
+    </mwc-list>
+    <mwc-fab
+      icon="done"
+      ?disabled=${!this.canPropose}
+      label="Make Group"
+      @click=${() => this.canPropose && this.dispatchEvent(new CustomEvent('proposal', { detail: this.chosen }))}
+    ></mwc-fab>`
 }

@@ -4,6 +4,7 @@ import P2P, { State } from '@mothepro/fancy-p2p'
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 
 import './duo-lobby.js'
+import './multi-lobby.js'
 
 /** Keys for storing data in kv-storage */
 const enum Keys {
@@ -118,13 +119,25 @@ export default class extends LitElement {
             ? html`
             <p2p-duo-lobby
               name=${this.name}
+              maxlength=${this.maxlength}
               .connection=${this.p2p.lobbyConnection}
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
               @name-change=${this.nameChanged}
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
-            : 'not supported yet'
+            : html`
+            <p2p-multi-lobby
+              name=${this.name}
+              maxlength=${this.maxlength}
+              max-peers=${this.maxPeers}
+              min-peers=${this.minPeers}
+              .connection=${this.p2p.lobbyConnection}
+              .groupExists=${this.p2p.groupExists}
+              ?can-change-name=${this.localStorage}
+              @name-change=${this.nameChanged}
+              @proposal=${this.proposal}
+            ></p2p-multi-lobby>`
 
         case State.READY:
           return html`
