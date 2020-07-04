@@ -10,6 +10,7 @@ import '@material/mwc-list/mwc-check-list-item.js'
 import '@material/mwc-icon-button'
 import '@material/mwc-icon'
 import '@material/mwc-fab'
+import '@material/mwc-textfield'
 
 declare global {
   interface HTMLElementEventMap {
@@ -78,6 +79,10 @@ export default class extends LitElement {
       text-align: center;
     }
 
+    :host .tall {
+      height: 85px;
+    }
+
     :host mwc-fab[disabled] {
       --mdc-theme-on-secondary: white;
       --mdc-theme-secondary: lightgrey;
@@ -86,6 +91,7 @@ export default class extends LitElement {
       --mdc-fab-box-shadow-active: none;
       --mdc-ripple-fg-opacity: 0;
       cursor: default !important;
+      pointer-events: none;
     }`
 
   protected async updated(changed: Map<string | number | symbol, unknown>) {
@@ -93,6 +99,12 @@ export default class extends LitElement {
       this.clients = []
       for await (const client of this.connection!)
         this.bindClient(client)
+    }
+
+    // focus on the new textbox
+    if (changed.has('editing') && this.editing) {
+      await Promise.resolve() // wait a tick for material to catch up
+      this.shadowRoot!.getElementById('field')!.focus()
     }
   }
 
@@ -112,6 +124,8 @@ export default class extends LitElement {
   private nameChange(event: Event) {
     event.preventDefault()
     const detail = new FormData(event.target! as HTMLFormElement).get('name')?.toString() ?? ''
+    console.log(this.name, detail)
+
     if (this.name != detail) {
       this.name = detail
       this.dispatchEvent(new CustomEvent('name-change', { detail }))
@@ -120,7 +134,7 @@ export default class extends LitElement {
   }
 
   private selected({ detail: { index } }: MultiSelectedEvent) {
-    this.chosen = new Set(this.clients.filter((_, i) => index.has(i)))
+    this.chosen = new Set(this.clients.filter(({ isYou }, i) => !isYou && index.has(i)))
   }
 
   protected readonly render = () => html`
@@ -135,21 +149,27 @@ export default class extends LitElement {
           part="client is-you"
           tabindex=${index}
           hasMeta
-          ?noninteractive=${!this.canChangeName}
+          class=${this.editing && 'tall'}
+          ?noninteractive=${!this.canChangeName || this.editing}
           @request-selected=${() => this.editing = true}>${
         this.canChangeName
           ? this.editing
             ? html`
-              <form @submit=${this.nameChange}>
-                <input
-                  part="edit-name"
+              <form @submit=${console.warn}>
+                <mwc-textfield
+                  outlined
+                  charCounter
+                  fullwidth
+                  required
                   type="text"
-                  autofocus 
                   name="name"
-                  placeholder="Your name"
+                  label="Your Name"
+                  id="field"
                   maxlength=${this.maxlength}
-                  value=${client.name} />
-                </form>`
+                  value=${client.name}
+                  @blur=${() => this.editing = false}
+                ></mwc-textfield>
+              </form>`
             : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
           : client.name}
       </mwc-list-item>

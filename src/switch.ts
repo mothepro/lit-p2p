@@ -53,7 +53,7 @@ export default class extends LitElement {
 
   /** Max length of user's name */
   @property({ type: Number, attribute: 'maxlength' })
-  maxlength = 100
+  maxlength = 50
 
   /** The minimum number of other connections that can be made in the lobby. */
   @property({ type: Number, attribute: 'min-peers' })
