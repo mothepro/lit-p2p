@@ -180,7 +180,7 @@ export default class extends LitElement {
     this.clients.length == 1
     ? html`
       <slot name="alone">
-        <mwc-list-item part="client is-alone" noninteractive>
+        <mwc-list-item part="client is-alone" class="alone" noninteractive>
           Waiting for others to join this lobby.
         </mwc-list-item>
       </slot>` : ''}

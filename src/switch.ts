@@ -144,8 +144,12 @@ export default class extends LitElement {
             <slot
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
-              .peers=${this.p2p.peers}
-            >Access P2P by utilizing <code>this.parentNode.p2p</code></slot>`
+              .peers=${this.p2p.peers}>
+              Access P2P by utilizing 
+              <code>this.parentNode.broadcast</code>
+              <code>this.parentNode.random</code> 
+              & <code>this.parentNode.peers</code>
+            </slot>`
 
         case State.OFFLINE:
           return html`<slot name="offline">Connecting</slot>`
