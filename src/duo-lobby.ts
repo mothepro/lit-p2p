@@ -106,6 +106,7 @@ export default class extends LitElement {
           part="client is-you"
           tabindex=${index}
           hasMeta
+          ?noninteractive=${this.canChangeName}
           @request-selected=${() => this.editing = true}>${
         this.canChangeName
           ? this.editing
