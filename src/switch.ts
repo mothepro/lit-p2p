@@ -62,7 +62,7 @@ export default class extends LitElement {
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 10
 
-  private p2p?: P2P<ArrayBuffer>
+  public p2p?: P2P<ArrayBuffer>
 
   // Connect once
   protected async firstUpdated() {
@@ -132,7 +132,7 @@ export default class extends LitElement {
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
               .peers=${this.p2p.peers}
-            >Ready</slot>`
+            >Access P2P by utilizing <code>this.parentNode.p2p</code></slot>`
 
         case State.OFFLINE:
           return html`<slot name="offline">Connecting</slot>`

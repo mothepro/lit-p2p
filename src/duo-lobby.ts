@@ -154,6 +154,13 @@ export default class extends LitElement {
           : this.groupExists!(client)
             ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
             : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
-        </mwc-list-item>`)}
+        </mwc-list-item>`)}${
+    this.clients.length == 1
+    ? html`
+      <slot name="alone">
+        <mwc-list-item part="client is-alone" noninteractive>
+          Waiting for others to join this lobby.
+        </mwc-list-item>
+      </slot>` : ''}
     </mwc-list>`
 }
