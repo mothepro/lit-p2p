@@ -456,6 +456,11 @@
     "@material/feature-targeting" "^7.0.0"
     "@material/theme" "^7.0.0"
 
+"@mothepro/emojis@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@mothepro/emojis/-/emojis-1.2.2.tgz#dbc34c7f8a5d1d8a7f6f49872fb658489ee92903"
+  integrity sha512-btKcXwReWimPOUKUUXTFwwPAP7/aZ5tzsrgZdZSIylHQ2tHtbHs2jMES5dQmWBI/kCu2o6oslQVupTNE0dR0pA==
+
 "@mothepro/fancy-p2p@^0.0.17":
   version "0.0.17"
   resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.17.tgz#0be8ad2ad83dfada9d74d238e8ad6103d2f7ab24"
@@ -464,6 +469,16 @@
     "@types/ws" "^7.2.6"
     fancy-emitter "^2.0.0"
     simple-peer "^9.7.2"
+
+"@mothepro/signaling-lobby@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@mothepro/signaling-lobby/-/signaling-lobby-0.3.3.tgz#6731c719544ab527eb3e5963efe1baf727a732b0"
+  integrity sha512-ZLIbwOTLYixrgnhBNOfnKxBnG3yAoco8E1upf7qfSheeyT822Tg53uPNbZ+bsFWcWhM3LWf8vhi5WKPCUI4CAg==
+  dependencies:
+    "@mothepro/emojis" "^1.2.2"
+    fancy-emitter "^2.0.0"
+    ws "^7.2.3"
+    yargs "^15.3.1"
 
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
@@ -3839,6 +3854,11 @@ write-file-atomic@^3.0.0:
     is-typedarray "^1.0.0"
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
+
+ws@^7.2.3:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.1.tgz#d0547bf67f7ce4f12a72dfe31262c68d7dc551c8"
+  integrity sha512-D3RuNkynyHmEJIpD2qrgVkc9DQ23OrN/moAwZX4L8DfvszsJxpjQuUq3LMx6HoYji9fbIOBY18XWBsAux1ZZUA==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"

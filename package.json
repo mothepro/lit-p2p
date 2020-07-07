@@ -31,6 +31,7 @@
     "build:esm": "tsc -p tsconfig.esm.json"
   },
   "devDependencies": {
+    "@mothepro/signaling-lobby": "^0.3.3",
     "@types/mocha": "^7.0.2",
     "@types/should-sinon": "^0.0.6",
     "gh-pages": "^3.1.0",
