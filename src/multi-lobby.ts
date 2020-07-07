@@ -192,7 +192,7 @@ export default class extends LitElement {
                 maxlength=${this.maxlength}
                 value=${client.name}
                 @keydown=${this.nameChange}
-                @blur=${() => this.editing = false  /* TODO do not blue when selected again */}
+                @blur=${() => this.editing = false  /* TODO do not blur when selected again */}
               ></mwc-textfield>`
             : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
           : client.name}

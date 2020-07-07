@@ -20,6 +20,9 @@ declare global {
   }
 }
 
+/** Lets the event loop clear. */
+const microTick = () => new Promise(ok => setTimeout(ok, 6))
+
 @customElement('p2p-duo-lobby')
 export default class extends LitElement {
   /** Name of the user. An anonymous one may be set be the server if left unassigned. */
@@ -139,7 +142,7 @@ export default class extends LitElement {
                 maxlength=${this.maxlength}
                 value=${client.name}
                 @keydown=${this.nameChange}
-                @blur=${() => this.editing = false /* TODO do not blue when selected again */}
+                @blur=${() => this.editing = false /* TODO do not blur when selected again */}
               ></mwc-textfield>`
             : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
           : client.name}
@@ -151,9 +154,7 @@ export default class extends LitElement {
           tabindex=${index}
           ?hasMeta=${!action}
           ?noninteractive=${!action && this.groupExists!(client)}
-          @request-selected=${({ detail: { selected } }: CustomEvent<RequestSelectedDetail>) => {/* This is activated twice on rejection unforntuatley... `` */ }}
-          @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}
-          >
+          @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}>
           ${client.name}
           ${action
           ? html`
@@ -162,7 +163,7 @@ export default class extends LitElement {
               icon="check_circle"
               label="Aceept"
               @click=${() => {
-                action(true)
+                microTick().then(() => action(false)) // Ensure we don't "click" again to propose to the one we rejected
                 this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
               }}></mwc-icon-button>
             <mwc-icon-button
@@ -170,7 +171,7 @@ export default class extends LitElement {
               icon="cancel"
               label="Reject"
               @click=${() => {
-                action(false)
+                microTick().then(() => action(false)) // Ensure we don't "click" again to propose to the one we rejected
                 this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
               }}></mwc-icon-button>`
           : this.groupExists!(client)
