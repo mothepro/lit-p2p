@@ -112,8 +112,7 @@ export default class extends LitElement {
   private slotChange = () => {
     this.peerElements = []
     if (this.p2p?.state == State.READY) { // We need to bind
-      const defaultSlot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement
-      for (const element of defaultSlot.assignedElements() as PeerElement[] ?? []) {
+      for (const element of this.shadowRoot?.querySelector('slot')?.assignedElements() as PeerElement[] ?? []) {
         this.peerElements.push(element)
         element.broadcast = this.p2p.broadcast
         element.random = this.p2p.random
@@ -147,7 +146,7 @@ export default class extends LitElement {
         case State.LOBBY:
           return this.minPeers == 1 && this.maxPeers == 1
             ? html`
-            <slot name="top"></slot>
+            <slot></slot>
             <p2p-duo-lobby
               part="lobby"
               name=${this.name}
@@ -159,7 +158,7 @@ export default class extends LitElement {
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
             : html`
-            <slot name="top"></slot>
+            <slot></slot>
             <p2p-multi-lobby
               part="lobby"
               name=${this.name}
@@ -175,21 +174,22 @@ export default class extends LitElement {
 
         case State.READY:
           return html`
-            <slot name="top"></slot>
             <slot
+              name="p2p"
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
               .peers=${this.p2p.peers}>
               Access P2P by utilizing the properties <code>broadcast</code>, <code>random</code> & <code>peers</code>.
-            </slot>`
+            </slot>
+            <slot></slot>`
 
         case State.OFFLINE:
-          return html`<slot name="top"></slot><slot name="offline">Connecting</slot>`
+          return html`<slot></slot><slot name="offline">Connecting</slot>`
 
         case State.LOADING:
-          return html`<slot name="top"></slot><slot name="loading">Loading</slot>`
+          return html`<slot></slot><slot name="loading">Loading</slot>`
       }
 
-    return html`<slot name="top"></slot><slot name="disconnected">Disconnected</slot>`
+    return html`<slot></slot><slot name="disconnected">Disconnected</slot>`
   }
 }
