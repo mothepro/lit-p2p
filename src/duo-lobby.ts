@@ -124,7 +124,7 @@ export default class extends LitElement {
           tabindex=${index}
           hasMeta
           class=${this.editing && 'tall'}
-          ?noninteractive=${!this.canChangeName || this.editing}
+          ?noninteractive=${!this.canChangeName}
           @request-selected=${() => this.editing = true}>${
         this.canChangeName
           ? this.editing
@@ -133,7 +133,6 @@ export default class extends LitElement {
                 outlined
                 charCounter
                 fullwidth
-                required
                 type="text"
                 label="Your Name"
                 maxlength=${this.maxlength}

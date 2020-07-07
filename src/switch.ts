@@ -63,6 +63,9 @@ export default class extends LitElement {
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 10
 
+  @property({ type: Number, reflect: true })
+  state = State.OFFLINE
+
   public p2p?: P2P<ArrayBuffer>
 
   // Connect once
@@ -89,12 +92,12 @@ export default class extends LitElement {
     this.p2p.lobbyConnection.next.then(({ name }) => this.name = name)
 
     try {
-      for await (const _ of this.p2p!.stateChange)
-        this.requestUpdate()
+      for await (const state of this.p2p!.stateChange)
+        this.state = state
     } catch (error) {
       this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
     }
-    this.requestUpdate()
+    this.state = -1
   }
 
   private nameChanged({ detail }: NameChangeEvent) {
@@ -145,10 +148,7 @@ export default class extends LitElement {
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
               .peers=${this.p2p.peers}>
-              Access P2P by utilizing 
-              <code>this.parentNode.broadcast</code>
-              <code>this.parentNode.random</code> 
-              & <code>this.parentNode.peers</code>
+              Access P2P by utilizing the attributes <code>broadcast</code>, <code>random</code> & <code>peers</code>
             </slot>`
 
         case State.OFFLINE:
