@@ -72,7 +72,8 @@ export default class extends LitElement {
   @property({ type: Number, reflect: true })
   state = State.OFFLINE
 
-  public p2p?: P2P<ArrayBuffer>
+  public p2p?: P2P
+  private peerElements: PeerElement[] = []
 
   // Connect once
   protected async firstUpdated() {
@@ -102,15 +103,17 @@ export default class extends LitElement {
       for await (const state of this.p2p!.stateChange)
         this.state = state
     } catch (error) {
-      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
+      this.fail(error)
     }
     this.state = -1
   }
 
   /** Bind the properties to the slotted elements */
   private slotChange = () => {
+    this.peerElements = []
     if (this.p2p?.state == State.READY) { // We need to bind
       for (const element of this.shadowRoot?.querySelector('slot')?.assignedElements() as PeerElement[] ?? []) {
+        this.peerElements.push(element)
         element.broadcast = this.p2p.broadcast
         element.random = this.p2p.random
         element.peers = this.p2p.peers
@@ -128,8 +131,13 @@ export default class extends LitElement {
     try {
       this.p2p?.proposeGroup(...detail)
     } catch (error) {
-      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
+      this.fail(error)
     }
+  }
+
+  private fail(error: Error) {
+    for (const element of [this, ...this.peerElements])
+      element.dispatchEvent(new ErrorEvent('p2p-error', { error }))
   }
 
   protected readonly render = () => {
