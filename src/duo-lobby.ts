@@ -135,10 +135,11 @@ export default class extends LitElement {
                 fullwidth
                 type="text"
                 label="Your Name"
+                id="field"
                 maxlength=${this.maxlength}
                 value=${client.name}
                 @keydown=${this.nameChange}
-                @blur=${() => this.editing = false}
+                @blur=${() => this.editing = false /* TODO do not blue when selected again */}
               ></mwc-textfield>`
             : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
           : client.name}
@@ -161,17 +162,17 @@ export default class extends LitElement {
               icon="check_circle"
               label="Aceept"
               @click=${() => {
-              action(true)
-              this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
-            }}></mwc-icon-button>
+                action(true)
+                this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
+              }}></mwc-icon-button>
             <mwc-icon-button
               part="reject"
               icon="cancel"
               label="Reject"
               @click=${() => {
-              action(false)
-              this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
-            }}></mwc-icon-button>`
+                action(false)
+                this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
+              }}></mwc-icon-button>`
           : this.groupExists!(client)
             ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
             : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
