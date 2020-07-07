@@ -163,7 +163,7 @@ export default class extends LitElement {
               icon="check_circle"
               label="Aceept"
               @click=${() => {
-                microTick().then(() => action(false)) // Ensure we don't "click" again to propose to the one we rejected
+                microTick().then(() => action(true)) // Ensure we don't "click" again to propose to the one we rejected
                 this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
               }}></mwc-icon-button>
             <mwc-icon-button
