@@ -6,6 +6,12 @@ import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import './duo-lobby.js'
 import './multi-lobby.js'
 
+interface PeerElement extends Element {
+  broadcast: P2P['broadcast']
+  random: P2P['random']
+  peers: P2P['peers']
+}
+
 /** Keys for storing data in kv-storage */
 const enum Keys {
   /** The name of the user to connect in the lobby as. */
@@ -70,6 +76,7 @@ export default class extends LitElement {
 
   // Connect once
   protected async firstUpdated() {
+    this.shadowRoot?.addEventListener('slotchange', this.slotChange) // TODO maybe this shouldn't be here...
     this.connect(this.localStorage
       ? (await storage.get(Keys.NAME) || '').toString()
       : this.name)
@@ -100,6 +107,17 @@ export default class extends LitElement {
     this.state = -1
   }
 
+  /** Bind the properties to the slotted elements */
+  private slotChange = () => {
+    if (this.p2p?.state == State.READY) { // We need to bind
+      for (const element of this.shadowRoot?.querySelector('slot')?.assignedElements() as PeerElement[] ?? []) {
+        element.broadcast = this.p2p.broadcast
+        element.random = this.p2p.random
+        element.peers = this.p2p.peers
+      }
+    }
+  }
+
   private nameChanged({ detail }: NameChangeEvent) {
     if (this.localStorage)
       storage.set(Keys.NAME, this.name = detail)
@@ -110,7 +128,7 @@ export default class extends LitElement {
     try {
       this.p2p?.proposeGroup(...detail)
     } catch (error) {
-      this.dispatchEvent(new ErrorEvent('p2p-error', {error}))
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
     }
   }
 
@@ -148,7 +166,7 @@ export default class extends LitElement {
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
               .peers=${this.p2p.peers}>
-              Access P2P by utilizing the attributes <code>broadcast</code>, <code>random</code> & <code>peers</code>
+              Access P2P by utilizing the properties <code>broadcast</code>, <code>random</code> & <code>peers</code>.
             </slot>`
 
         case State.OFFLINE:
