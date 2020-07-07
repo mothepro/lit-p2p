@@ -146,6 +146,7 @@ export default class extends LitElement {
         case State.LOBBY:
           return this.minPeers == 1 && this.maxPeers == 1
             ? html`
+            <slot name="top"></slot>
             <p2p-duo-lobby
               part="lobby"
               name=${this.name}
@@ -157,6 +158,7 @@ export default class extends LitElement {
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
             : html`
+            <slot name="top"></slot>
             <p2p-multi-lobby
               part="lobby"
               name=${this.name}
@@ -172,6 +174,7 @@ export default class extends LitElement {
 
         case State.READY:
           return html`
+            <slot name="top"></slot>
             <slot
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
@@ -180,12 +183,12 @@ export default class extends LitElement {
             </slot>`
 
         case State.OFFLINE:
-          return html`<slot name="offline">Connecting</slot>`
+          return html`<slot name="top"></slot><slot name="offline">Connecting</slot>`
 
         case State.LOADING:
-          return html`<slot name="loading">Loading</slot>`
+          return html`<slot name="top"></slot><slot name="loading">Loading</slot>`
       }
 
-    return html`<slot name="disconnected">Disconnected</slot>`
+    return html`<slot name="top"></slot><slot name="disconnected">Disconnected</slot>`
   }
 }
