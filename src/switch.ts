@@ -112,7 +112,8 @@ export default class extends LitElement {
   private slotChange = () => {
     this.peerElements = []
     if (this.p2p?.state == State.READY) { // We need to bind
-      for (const element of this.shadowRoot?.querySelector('slot')?.assignedElements() as PeerElement[] ?? []) {
+      const defaultSlot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement
+      for (const element of defaultSlot.assignedElements() as PeerElement[] ?? []) {
         this.peerElements.push(element)
         element.broadcast = this.p2p.broadcast
         element.random = this.p2p.random
