@@ -147,6 +147,7 @@ export default class extends LitElement {
           return this.minPeers == 1 && this.maxPeers == 1
             ? html`
             <p2p-duo-lobby
+              part="lobby"
               name=${this.name}
               maxlength=${this.maxlength}
               .connection=${this.p2p.lobbyConnection}
@@ -157,6 +158,7 @@ export default class extends LitElement {
             ></p2p-duo-lobby>`
             : html`
             <p2p-multi-lobby
+              part="lobby"
               name=${this.name}
               maxlength=${this.maxlength}
               max-peers=${this.maxPeers}
