@@ -1,7 +1,8 @@
+import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import storage from 'std:kv-storage'
 import { LitElement, html, customElement, property } from 'lit-element'
 import P2P, { State } from '@mothepro/fancy-p2p'
-import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
+import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
 
 import './duo-lobby.js'
 import './multi-lobby.js'
@@ -72,14 +73,16 @@ export default class extends LitElement {
   @property({ type: Number, reflect: true })
   state = State.OFFLINE
 
+  get forceOffline() { return location.hash == '#p2p-offline' }
+
   public p2p?: P2P
   private peerElements: PeerElement[] = []
 
-  // Connect once
   protected async firstUpdated() {
-    this.shadowRoot?.addEventListener('slotchange', this.slotChange) // TODO maybe this shouldn't be here...
-
-    if (location.hash != '#p2p-offline')
+    // TODO maybe this shouldn't be here...
+    this.shadowRoot?.addEventListener('slotchange', this.slotChange)
+    
+    if (!this.forceOffline)
       this.connect(this.localStorage
         ? (await storage.get(Keys.NAME) || '').toString()
         : this.name)
@@ -113,12 +116,18 @@ export default class extends LitElement {
   /** Bind the properties to the slotted elements */
   private slotChange = () => {
     this.peerElements = []
-    if (this.p2p?.state == State.READY) { // We need to bind
-      for (const element of this.shadowRoot?.querySelector('slot')?.assignedElements() as PeerElement[] ?? []) {
-        this.peerElements.push(element)
+    for (const element of (this.shadowRoot?.querySelector('slot[name="p2p"]') as HTMLSlotElement)
+      ?.assignedElements() as PeerElement[] ?? []) {
+      this.peerElements.push(element)
+      if (this.p2p?.state == State.READY) { // We need to bind real stuff
+        element.peers = this.p2p.peers
         element.broadcast = this.p2p.broadcast
         element.random = this.p2p.random
-        element.peers = this.p2p.peers
+      } else {
+        const mockPeer = new MockPeer('')
+        element.peers = [mockPeer]
+        element.broadcast = mockPeer.send
+        element.random = Math.random
       }
     }
   }
@@ -137,6 +146,7 @@ export default class extends LitElement {
     }
   }
 
+  // TODO, don't think we need to dispatch for EVERY slot
   private fail(error: Error) {
     for (const element of [this, ...this.peerElements])
       element.dispatchEvent(new ErrorEvent('p2p-error', { error }))
@@ -178,6 +188,7 @@ export default class extends LitElement {
           return html`
             <slot
               name="p2p"
+              online
               .broadcast=${this.p2p.broadcast}
               .random=${this.p2p.random}
               .peers=${this.p2p.peers}>
@@ -191,10 +202,10 @@ export default class extends LitElement {
         case State.LOADING:
           return html`<slot></slot><slot name="loading">Loading</slot>`
       }
-    
+
     if (location.hash == '#p2p-offline')
       return html`<slot name="p2p" offline></slot><slot></slot>`
 
-    return html`<slot></slot><slot name="disconnected">Disconnected</slot>`
+    return html`<slot name="p2p" offline></slot><slot></slot><slot name="disconnected">Disconnected</slot>`
   }
 }
