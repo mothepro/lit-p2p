@@ -78,9 +78,11 @@ export default class extends LitElement {
   // Connect once
   protected async firstUpdated() {
     this.shadowRoot?.addEventListener('slotchange', this.slotChange) // TODO maybe this shouldn't be here...
-    this.connect(this.localStorage
-      ? (await storage.get(Keys.NAME) || '').toString()
-      : this.name)
+
+    if (location.hash != '#p2p-offline')
+      this.connect(this.localStorage
+        ? (await storage.get(Keys.NAME) || '').toString()
+        : this.name)
   }
 
   private async connect(name: string) {
@@ -189,6 +191,9 @@ export default class extends LitElement {
         case State.LOADING:
           return html`<slot></slot><slot name="loading">Loading</slot>`
       }
+    
+    if (location.hash == '#p2p-offline')
+      return html`<slot name="p2p" offline></slot><slot></slot>`
 
     return html`<slot></slot><slot name="disconnected">Disconnected</slot>`
   }
