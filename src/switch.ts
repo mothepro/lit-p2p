@@ -186,6 +186,7 @@ export default class extends LitElement {
 
         case State.READY:
           return html`
+            <slot></slot>
             <slot
               name="p2p"
               online
@@ -193,8 +194,7 @@ export default class extends LitElement {
               .random=${this.p2p.random}
               .peers=${this.p2p.peers}>
               Access P2P by utilizing the properties <code>broadcast</code>, <code>random</code> & <code>peers</code>.
-            </slot>
-            <slot></slot>`
+            </slot>`
 
         case State.OFFLINE:
           return html`<slot></slot><slot name="offline">Connecting</slot>`
@@ -204,8 +204,8 @@ export default class extends LitElement {
       }
 
     if (location.hash == '#p2p-offline')
-      return html`<slot name="p2p" offline></slot><slot></slot>`
+      return html`<slot></slot><slot name="p2p" offline></slot>`
 
-    return html`<slot name="p2p" offline></slot><slot></slot><slot name="disconnected">Disconnected</slot>`
+    return html`<slot></slot><slot name="p2p" offline></slot><slot name="disconnected">Disconnected</slot>`
   }
 }
