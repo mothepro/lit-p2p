@@ -2,7 +2,7 @@
   "name": "lit-p2p",
   "description": "Web components to simplify finding peers using fancy-p2p and Material UI.",
   "author": "Maurice Prosper",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "Apache-2.0",
   "main": "dist/npm/index.js",
   "sideEffects": false,
