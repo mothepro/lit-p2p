@@ -71,7 +71,7 @@ export default class extends LitElement {
   maxPeers = 10
 
   @property({ type: Number, reflect: true })
-  state = State.OFFLINE
+  state = this.forceOffline ? -1 : State.OFFLINE
 
   get forceOffline() { return location.hash == '#p2p-offline' }
 
@@ -153,7 +153,7 @@ export default class extends LitElement {
   }
 
   protected readonly render = () => {
-    if (this.p2p?.stateChange.isAlive)
+    if (!this.forceOffline && this.p2p?.stateChange.isAlive)
       switch (this.p2p!.state) {
         case State.LOBBY:
           return this.minPeers == 1 && this.maxPeers == 1
@@ -202,9 +202,6 @@ export default class extends LitElement {
         case State.LOADING:
           return html`<slot></slot><slot name="loading">Loading</slot>`
       }
-
-    if (location.hash == '#p2p-offline')
-      return html`<slot></slot><slot name="p2p" offline></slot>`
 
     return html`<slot></slot><slot name="p2p" offline></slot><slot name="disconnected">Disconnected</slot>`
   }
