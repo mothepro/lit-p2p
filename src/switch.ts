@@ -127,7 +127,7 @@ export default class extends LitElement {
         const mockPeer = new MockPeer('')
         element.peers = [mockPeer]
         element.broadcast = mockPeer.send
-        element.random = Math.random
+        element.random = (isInt = false) => isInt ? Math.trunc(2**31 * Math.random() - 2**31) : Math.random()
       }
     }
   }
