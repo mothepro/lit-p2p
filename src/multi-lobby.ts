@@ -220,6 +220,7 @@ export default class extends LitElement {
         <mwc-icon-button slot="dismiss" icon="close" label="reject"></mwc-icon-button>
       </mwc-snackbar>` : ''}
     <mwc-fab
+      part="make-group"
       icon="done"
       ?disabled=${!this.canPropose}
       label="Make Group"
