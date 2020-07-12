@@ -158,8 +158,11 @@ export default class extends LitElement {
   private handleProposal({ detail: { reason } }: SnackBarClosingEvent) {
     if (this.proposal) { // this should be true in this function...
       this.proposal.action!(reason == 'action')
-      if (reason != 'action' && this.proposalQueue.length) // refill queue
-        this.proposal = this.proposalQueue.shift()
+      if (reason != 'action')
+        if (this.proposalQueue.length) // refill queue
+          this.proposal = this.proposalQueue.shift()
+        else
+          delete this.proposal
     }
   }
 
