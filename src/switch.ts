@@ -11,6 +11,7 @@ interface PeerElement extends Element {
   broadcast: P2P['broadcast']
   random: P2P['random']
   peers: P2P['peers']
+  online: boolean
 }
 
 /** Keys for storing data in kv-storage */
@@ -123,11 +124,13 @@ export default class extends LitElement {
         element.peers = this.p2p.peers
         element.broadcast = this.p2p.broadcast
         element.random = this.p2p.random
+        element.online = true
       } else {
         const mockPeer = new MockPeer('')
         element.peers = [mockPeer]
         element.broadcast = mockPeer.send
         element.random = (isInt = false) => isInt ? Math.trunc(2**31 * Math.random() - 2**31) : Math.random()
+        element.online = false
       }
     }
   }
