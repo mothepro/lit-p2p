@@ -82,7 +82,7 @@ export default class extends LitElement {
   protected async firstUpdated() {
     // TODO maybe this shouldn't be here...
     this.shadowRoot?.addEventListener('slotchange', this.slotChange)
-    
+
     if (!this.forceOffline)
       this.connect(this.localStorage
         ? (await storage.get(Keys.NAME) || '').toString()
@@ -106,32 +106,45 @@ export default class extends LitElement {
     this.p2p.lobbyConnection.next.then(({ name }) => this.name = name)
 
     try {
-      for await (const state of this.p2p!.stateChange)
+      for await (const state of this.p2p!.stateChange) {
         this.state = state
+        this.bindRealPeerElementData()
+      }
     } catch (error) {
-      this.fail(error)
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
     }
     this.state = -1
+    this.bindMockPeerElementData()
   }
 
   /** Bind the properties to the slotted elements */
   private slotChange = () => {
-    this.peerElements = []
-    for (const element of (this.shadowRoot?.querySelector('slot[name="p2p"]') as HTMLSlotElement)
-      ?.assignedElements() as PeerElement[] ?? []) {
-      this.peerElements.push(element)
-      if (this.p2p?.state == State.READY) { // We need to bind real stuff
+    this.peerElements = (this.shadowRoot?.querySelector('slot[name="p2p"]') as HTMLSlotElement)?.assignedElements() as PeerElement[] ?? []
+    if (this.forceOffline)
+      this.bindMockPeerElementData()
+  }
+
+  /** Bind the real p2p data to the slots asking for it. */
+  // TODO use some internal lit-* stuff to do this when online or
+  private bindRealPeerElementData() {
+    if (this.p2p?.state == State.READY)
+      for (const element of this.peerElements) {
         element.peers = this.p2p.peers
         element.broadcast = this.p2p.broadcast
         element.random = this.p2p.random
         element.online = true
-      } else {
-        const mockPeer = new MockPeer('')
-        element.peers = [mockPeer]
-        element.broadcast = mockPeer.send
-        element.random = (isInt = false) => isInt ? Math.trunc(2**31 * Math.random() - 2**31) : Math.random()
-        element.online = false
       }
+  }
+
+  /** Bind the fake p2p data to the slots asking for it. */
+  // TODO use some internal lit-* stuff to do this when online or
+  private bindMockPeerElementData() {
+    for (const element of this.peerElements) {
+      const mockPeer = new MockPeer('')
+      element.peers = [mockPeer]
+      element.broadcast = mockPeer.send
+      element.random = (isInt = false) => isInt ? Math.trunc(2 ** 31 * Math.random() - 2 ** 31) : Math.random()
+      element.online = false
     }
   }
 
@@ -145,14 +158,8 @@ export default class extends LitElement {
     try {
       this.p2p?.proposeGroup(...detail)
     } catch (error) {
-      this.fail(error)
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
     }
-  }
-
-  // TODO, don't think we need to dispatch for EVERY slot
-  private fail(error: Error) {
-    for (const element of [this, ...this.peerElements])
-      element.dispatchEvent(new ErrorEvent('p2p-error', { error }))
   }
 
   protected readonly render = () => {
