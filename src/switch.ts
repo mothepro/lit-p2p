@@ -16,6 +16,7 @@ const enum Keys {
 declare global {
   interface HTMLElementEventMap {
     'p2p-error': ErrorEvent
+    'p2p-update': CustomEvent<boolean>
   }
   interface Window {
     /** Bindings from `fancy-p2p` instance set on window by `lit-p2p`. */
@@ -29,15 +30,18 @@ declare global {
   const p2p: Window['p2p']
 }
 
+function resetP2P() {
+  const mockPeer = new MockPeer('')
+  window.p2p = {
+    peers: [mockPeer],
+    broadcast: mockPeer.send,
+    random: (isInt = false) => isInt ? Math.trunc(2 ** 31 * Math.random() - 2 ** 31) : Math.random(),
+    online: false,
+  }
+}
 
 // Bind Mock p2p to the window
-const mockPeer = new MockPeer('')
-window.p2p = {
-  peers: [mockPeer],
-  broadcast: mockPeer.send,
-  random: (isInt = false) => isInt ? Math.trunc(2 ** 31 * Math.random() - 2 ** 31) : Math.random(),
-  online: false,
-}
+resetP2P()
 
 @customElement('p2p-switch')
 export default class extends LitElement {
@@ -125,18 +129,22 @@ export default class extends LitElement {
 
     try {
       for await (const state of this.p2p!.stateChange) {
-        if (state == State.READY)
+        if (state == State.READY) {
           window.p2p = {
             peers: this.p2p.peers,
             broadcast: this.p2p.broadcast,
             random: this.p2p.random,
             online: true,
           }
+          this.dispatchEvent(new CustomEvent('p2p-update', { detail: true, bubbles: true, composed: true }))
+        }
         this.state = state
       }
     } catch (error) {
       this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
     }
+    resetP2P()
+    this.dispatchEvent(new CustomEvent('p2p-update', { detail: false, bubbles: true, composed: true }))
     this.state = -1
   }
 
