@@ -84,10 +84,14 @@ export default class extends LitElement {
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 10
 
+  /** URL hash to go offline, be sure to prepend with # */
+  @property({ type: String, attribute: 'offline-hash'})
+  offlineHash = '#p2p-offline'
+
   @property({ type: Number, reflect: true })
   state = this.forceOffline ? -1 : State.OFFLINE
 
-  get forceOffline() { return location.hash == '#p2p-offline' }
+  get forceOffline() { return location.hash == this.offlineHash }
 
   public p2p?: P2P
 
