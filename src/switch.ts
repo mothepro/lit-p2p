@@ -68,6 +68,10 @@ export default class extends LitElement {
   @property({ type: Number, reflect: true })
   timeout!: number
 
+  /** The number of milliseconds to wait before rejecting a proposal (when maxpeers > 1). Doesn't give up by default */
+  @property({ type: Number, reflect: true })
+  proposalTimeout = -1
+
   /** Whether to store the user's name in local kv-storage. */
   @property({ type: Boolean, attribute: 'local-storage' })
   localStorage = false
@@ -85,7 +89,7 @@ export default class extends LitElement {
   maxPeers = 10
 
   /** URL hash to go offline, be sure to prepend with # */
-  @property({ type: String, attribute: 'offline-hash'})
+  @property({ type: String, attribute: 'offline-hash' })
   offlineHash = '#p2p-offline'
 
   @property({ type: Number, reflect: true })
@@ -174,6 +178,7 @@ export default class extends LitElement {
               part="lobby"
               exportparts="client-list client is-you is-other is-alone edit-button make-group"
               name=${this.name}
+              timeout=${this.proposalTimeout}
               maxlength=${this.maxlength}
               max-peers=${this.maxPeers}
               min-peers=${this.minPeers}

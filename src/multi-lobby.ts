@@ -3,6 +3,7 @@ import type { SafeListener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
 import type { MultiSelectedEvent } from '@material/mwc-list/mwc-list-foundation'
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
+import type { Snackbar } from '@material/mwc-snackbar'
 
 import '@material/mwc-list'
 import '@material/mwc-list/mwc-list-item.js'
@@ -57,6 +58,10 @@ export default class extends LitElement {
   /** The maximum number of other connections that can be made in the lobby. */
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 10
+
+  /** Automatically reject active proposal in milliseconds. Disabled by default (-1) */
+  @property({ type: Number })
+  timeout = -1
 
   @internalProperty({})
   private chosen: Set<Client> = new Set
@@ -118,8 +123,11 @@ export default class extends LitElement {
       if (action)
         if (this.proposal) // Add to queue
           this.proposalQueue.push({ members, action })
-        else
+        else {
           this.proposal = { members, action }
+          if (this.timeout > 10000)
+            (this.shadowRoot?.getElementById('active-proposal') as Snackbar)?.close('dismiss')
+        }
 
       // Update UI every time a client accepts or rejects the proposal
       ack.on(() => this.requestUpdate())
@@ -211,7 +219,8 @@ export default class extends LitElement {
     ${this.proposal ? html`
       <mwc-snackbar
         open
-        timeoutMs=${10000}
+        id="active-proposal"
+        timeoutMs=${this.timeout > 10000 ? -1 : this.timeout}
         labelText="Join group with ${this.proposal.members.map(({ name }) => name).join(', ')}"
         @MDCSnackbar:closing=${this.handleProposal}>
         <mwc-icon-button slot="action" icon="check" label="accept"></mwc-icon-button>
