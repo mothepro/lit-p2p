@@ -87,14 +87,6 @@ export default class extends LitElement {
       justify-content: center;
     }
 
-    :host .tall {
-      height: 85px;
-    }
-
-    :host form * {
-      overflow: visible;
-    }
-
     :host mwc-fab[disabled] { /** How is this not supported natively?? */
       --mdc-theme-on-secondary: white;
       --mdc-theme-secondary: lightgrey;
@@ -132,7 +124,7 @@ export default class extends LitElement {
       // Update UI every time a client accepts or rejects the proposal
       ack.on(() => this.requestUpdate())
         // TODO remove from queue
-        .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error })))
+        .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error }))) // TODO clean proposals...
         .finally(() => this.requestUpdate())
     }
     this.clients = this.clients.filter(currentClient => currentClient != client)
@@ -171,40 +163,43 @@ export default class extends LitElement {
       part="client-list"
       multi
       rootTabbable
-      @selected=${this.selected}>${this.clients.map((client, index) =>
-    client.isYou
+      @selected=${this.selected}>${this.clients.map((client, index) => client.isYou
+    ? html`${this.editing
+
+      // Editing own name
       ? html`
-        <mwc-list-item
-          part="client is-you"
-          tabindex=${index}
-          hasMeta
-          class=${this.editing && 'tall'}
-          ?noninteractive=${!this.canChangeName || this.editing}
-          @request-selected=${() => this.editing = true}>${
-        this.canChangeName
-          ? this.editing
-            ? html`
-              <mwc-textfield
-                outlined
-                charCounter
-                fullwidth
-                required
-                type="text"
-                label="Your Name"
-                id="field"
-                maxlength=${this.maxlength}
-                value=${client.name}
-                @keydown=${this.nameChange}
-                @blur=${() => this.editing = false  /* TODO do not blur when selected again */}
-              ></mwc-textfield>`
-            : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
-          : client.name}
-      </mwc-list-item>
-      <li divider padded role="separator"></li>`
+      <mwc-textfield
+        outlined
+        charCounter
+        fullwidth
+        type="text"
+        label="Your Name"
+        id="field"
+        maxlength=${this.maxlength}
+        value=${client.name}
+        @keydown=${this.nameChange}
+        @blur=${() => this.editing = false}
+      ></mwc-textfield>`
+
+      // Your name in list
       : html`
-        <mwc-check-list-item part="client is-other" tabindex=${index}>
-          ${client.name}
-        </mwc-check-list-item>`)}${
+      <mwc-list-item
+        part="client is-you"
+        ?hasMeta=${this.canChangeName}
+        ?noninteractive=${!this.canChangeName}
+        @request-selected=${() => this.editing = true}>
+        ${client.name}
+        ${this.canChangeName ? html`<mwc-icon part="edit-button" slot="meta">create</mwc-icon>` : ''}
+      </mwc-list-item>`}
+      <li divider padded role="separator"></li>`
+
+    // Other clients
+    : html`
+    <mwc-check-list-item part="client is-other">
+      ${client.name}
+    </mwc-check-list-item>`)}${
+
+    // No one else in lobby
     this.clients.length == 1
       ? html`
       <slot name="alone">
