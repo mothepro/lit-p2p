@@ -193,7 +193,7 @@ export default class extends LitElement {
           return html`
             <slot></slot>
             <slot name="p2p" online>
-              Access P2P by utilizing the properties <code>broadcast</code>, <code>random</code> & <code>peers</code>.
+              Access P2P by utilizing the variable <code>window.p2p</code>.
             </slot>`
 
         case State.OFFLINE:

@@ -1,5 +1,5 @@
 import { LitElement, html, customElement, property, css, internalProperty } from 'lit-element'
-import type { SafeListener } from 'fancy-emitter'
+import type { SafeListener, Listener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
 import type { MultiSelectedEvent } from '@material/mwc-list/mwc-list-foundation'
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
@@ -15,6 +15,7 @@ import '@material/mwc-textfield'
 import '@material/mwc-snackbar'
 
 type SnackBarClosingEvent = CustomEvent<{ reason?: string }>
+type Proposal<E = Client['proposals']> = E extends SafeListener<infer T> ? T : void
 
 declare global {
   interface HTMLElementEventMap {
@@ -29,6 +30,14 @@ export default class extends LitElement {
   /** Name of the user. An anonymous one may be set be the server if left unassigned. */
   @property({ type: String, reflect: true })
   name = ''
+
+  /** Content to show in the snackbar's label given the current proposal. */
+  @property({ type: Function, attribute: false })
+  proposalLabel = ({ action, members, ack }: Proposal) => `
+    ${action ? 'Join group with' : 'Joining group with'}
+    ${members.map(({name}) => name).join(', ')}
+    (${ack.count + (action ? 0 : 1)} / ${1 + members.length})
+    ${action ? '' : '...'}`
 
   /** Name of the user. An anonymous one may be set be the server if left unassigned. */
   @property({ type: Boolean, reflect: true, attribute: 'can-change-name' })
@@ -67,15 +76,9 @@ export default class extends LitElement {
   private chosen: Set<Client> = new Set
 
   @internalProperty()
-  proposal?: {
-    members: Client[]
-    action?: (accept: boolean) => void
-  }
+  proposal?: Proposal
 
-  private readonly proposalQueue: {
-    members: Client[]
-    action?: (accept: boolean) => void
-  }[] = []
+  private readonly proposalQueue: Proposal[] = []
 
   get canPropose() {
     return this.minPeers <= this.chosen.size
@@ -120,22 +123,54 @@ export default class extends LitElement {
   private bindClient = async (client: Client) => {
     this.clients = [...this.clients, client]
     for await (const { members, action, ack } of client.proposals) {
-      if (action)
-        if (this.proposal) // Add to queue
-          this.proposalQueue.push({ members, action })
-        else {
-          this.proposal = { members, action }
-          if (this.timeout > 10000)
-            (this.shadowRoot?.getElementById('active-proposal') as Snackbar)?.close('dismiss')
-        }
-
-      // Update UI every time a client accepts or rejects the proposal
-      ack.on(() => this.requestUpdate())
-        // TODO remove from queue
-        .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error }))) // TODO clean proposals...
-        .finally(() => this.requestUpdate())
+      this.proposalQueue.push({ members, action, ack })
+      this.maybeSetActiveProposal()
+      this.bindAcks(ack)
     }
     this.clients = this.clients.filter(currentClient => currentClient != client)
+  }
+
+  /** Update UI every time a client accepts or rejects the proposal */
+  private async bindAcks(clientAcks: Listener<Client>) {
+    try {
+      for await (const client of clientAcks)
+        this.requestUpdate() // updates # in snackbar
+    } catch (error) {
+      error.fatal = false
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
+    }
+    
+    // Remove this from current proposal, or queue
+    if (clientAcks == this.proposal?.ack)
+      delete this.proposal
+    for (const [index, { ack }] of this.proposalQueue.entries())
+      if (clientAcks == ack)
+        this.proposalQueue.splice(index, 1)
+    
+    this.maybeSetActiveProposal()
+  }
+
+  /** Accept proposal and remove buttons OR Reject proposal then remove it from list */
+  private handleProposal({ detail: { reason } }: SnackBarClosingEvent) {
+    this.proposal?.action!(reason == 'action')
+    if (reason == 'action') {
+      delete this.proposal?.action
+        // Keep showing the snackbar
+        ;(this.shadowRoot?.getElementById('active-proposal') as Snackbar)?.show()
+      this.requestUpdate()
+    } else {
+      delete this.proposal
+      this.maybeSetActiveProposal()
+    }
+  }
+
+  private maybeSetActiveProposal() {
+    if (this.proposal || !this.proposalQueue.length)
+      return
+
+    this.proposal = this.proposalQueue.shift()
+    if (this.timeout > 10000) // Stupid mwc-snackbar has a limit on timeout for some reason...
+      (this.shadowRoot?.getElementById('active-proposal') as Snackbar)?.close('dismiss')
   }
 
   /** Do not use form submission since that event doesn't pass through shadow dom */
@@ -152,18 +187,6 @@ export default class extends LitElement {
 
   private selected({ detail: { index } }: MultiSelectedEvent) {
     this.chosen = new Set(this.clients.filter(({ isYou }, i) => !isYou && index.has(i)))
-  }
-
-  /** Accept/Reject proposal then remove it from list */
-  private handleProposal({ detail: { reason } }: SnackBarClosingEvent) {
-    if (this.proposal) { // this should be true in this function...
-      this.proposal.action!(reason == 'action')
-      if (reason != 'action')
-        if (this.proposalQueue.length) // refill queue
-          this.proposal = this.proposalQueue.shift()
-        else
-          delete this.proposal
-    }
   }
 
   protected readonly render = () => html`
@@ -221,10 +244,11 @@ export default class extends LitElement {
         open
         id="active-proposal"
         timeoutMs=${this.timeout > 10000 ? -1 : this.timeout}
-        labelText="Join group with ${this.proposal.members.map(({ name }) => name).join(', ')}"
+        labelText="${this.proposalLabel(this.proposal).trim()}"
         @MDCSnackbar:closing=${this.handleProposal}>
-        <mwc-icon-button slot="action" icon="check" label="accept"></mwc-icon-button>
-        <mwc-icon-button slot="dismiss" icon="close" label="reject"></mwc-icon-button>
+        ${this.proposal.action ? html` 
+          <mwc-icon-button slot="action" icon="check" label="accept"></mwc-icon-button>
+          <mwc-icon-button slot="dismiss" icon="close" label="reject"></mwc-icon-button>` : ''}
       </mwc-snackbar>` : ''}
     <mwc-fab
       part="make-group"
