@@ -92,6 +92,7 @@ export default class extends LitElement {
   public p2p?: P2P
 
   protected async firstUpdated() {
+    addEventListener('hashchange', () => this.forceOffline && this.p2p?.leaveLobby())
     if (!this.forceOffline)
       this.connect(this.localStorage
         ? (await storage.get(Keys.NAME) || '').toString()
