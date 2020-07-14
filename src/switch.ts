@@ -171,7 +171,7 @@ export default class extends LitElement {
             <slot></slot>
             <p2p-duo-lobby
               part="lobby"
-              exportparts="client-list client is-you is-other is-alone edit-button accept reject waiting invite"
+              exportparts="client-list , client , is-you , is-other , is-alone , edit-button , accept , reject , waiting , invite"
               name=${this.name}
               maxlength=${this.maxlength}
               .connection=${this.p2p.lobbyConnection}
@@ -184,7 +184,7 @@ export default class extends LitElement {
             <slot></slot>
             <p2p-multi-lobby
               part="lobby"
-              exportparts="client-list client is-you is-other is-alone edit-button make-group"
+              exportparts="client-list , client , is-you , is-other , is-alone , edit-button , make-group"
               name=${this.name}
               timeout=${this.proposalTimeout}
               maxlength=${this.maxlength}
