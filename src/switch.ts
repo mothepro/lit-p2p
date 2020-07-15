@@ -1,11 +1,19 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import storage from 'std:kv-storage'
 import { LitElement, html, customElement, property } from 'lit-element'
-import P2P, { State } from '@mothepro/fancy-p2p'
+import P2P, { State, Sendable } from '@mothepro/fancy-p2p'
 import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
 
 import './duo-lobby.js'
 import './multi-lobby.js'
+
+/** The direct connections (or mock) with peers we are grouped with. (From `fancy-p2p`) */
+export interface Peers<T extends Sendable = Sendable> {
+  readonly broadcast: P2P<T>['broadcast']
+  readonly random: P2P<T>['random']
+  readonly peers: P2P<T>['peers']
+  readonly online: boolean
+}
 
 /** Keys for storing data in kv-storage */
 const enum Keys {
@@ -20,28 +28,28 @@ declare global {
   }
   interface Window {
     /** Bindings from `fancy-p2p` instance set on window by `lit-p2p`. */
-    p2p: {
-      readonly broadcast: P2P['broadcast']
-      readonly random: P2P['random']
-      readonly peers: P2P['peers']
-      readonly online: boolean
-    }
+    p2p: Peers
   }
+  /** Bindings from `fancy-p2p` instance set on window by `lit-p2p`. */
   const p2p: Window['p2p']
 }
 
-function resetP2P() {
-  const mockPeer = new MockPeer('')
-  window.p2p = {
-    peers: [mockPeer],
-    broadcast: mockPeer.send,
-    random: (isInt = false) => isInt ? Math.trunc(2 ** 31 * Math.random() - 2 ** 31) : Math.random(),
-    online: false,
-  }
+const mockPeer = new MockPeer('')
+
+function setP2P(data: Peers = {
+  online: false,
+  peers: [mockPeer],
+  broadcast: mockPeer.send,
+  random: (isInt = false) => isInt
+    ? Math.trunc(2 ** 32 * Math.random() - 2 ** 31)
+    : Math.random(),
+}) {
+  window.p2p = data
+  dispatchEvent(new CustomEvent('p2p-update', { detail: data.online, bubbles: true, composed: true }))
 }
 
 // Bind Mock p2p to the window
-resetP2P()
+setP2P()
 
 @customElement('p2p-switch')
 export default class extends LitElement {
@@ -112,39 +120,36 @@ export default class extends LitElement {
   }
 
   private async connect(name: string) {
-    this.p2p?.leaveLobby()
-    this.p2p = new P2P(name, {
-      retries: this.retries,
-      timeout: this.timeout,
-      stuns: this.stuns,
-      lobby: this.lobby,
-      server: {
-        address: this.signaling,
-        version: this.version,
-      },
-    })
-
-    // Set my name on the attribute when it comes up
-    this.p2p.lobbyConnection.next.then(({ name }) => this.name = name)
-
     try {
+      this.p2p?.leaveLobby()
+      this.p2p = new P2P(name, {
+        retries: this.retries,
+        timeout: this.timeout,
+        stuns: this.stuns,
+        lobby: this.lobby,
+        server: {
+          address: this.signaling,
+          version: this.version,
+        },
+      })
+
+      // Set my name on the attribute when it comes up
+      this.p2p.lobbyConnection.next.then(({ name }) => this.name = name)
+
       for await (const state of this.p2p!.stateChange) {
-        if (state == State.READY) {
-          window.p2p = {
+        if (state == State.READY)
+          setP2P({
+            online: true,
             peers: this.p2p.peers,
             broadcast: this.p2p.broadcast,
             random: this.p2p.random,
-            online: true,
-          }
-          this.dispatchEvent(new CustomEvent('p2p-update', { detail: true, bubbles: true, composed: true }))
-        }
+          })
         this.state = state
       }
     } catch (error) {
       this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
     }
-    resetP2P()
-    this.dispatchEvent(new CustomEvent('p2p-update', { detail: false, bubbles: true, composed: true }))
+    setP2P()
     this.state = -1
   }
 
@@ -201,7 +206,7 @@ export default class extends LitElement {
           return html`
             <slot></slot>
             <slot name="p2p" online>
-              Access P2P by utilizing the variable <code>window.p2p</code>.
+              Access P2P by listening to the <code>p2p-update</code> event on the <code>document</code>.
             </slot>`
 
         case State.OFFLINE:
