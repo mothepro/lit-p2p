@@ -40,4 +40,12 @@
   </p2p-switch>
 </body>
 
+<script>
+  addEventListener('p2p-error', console.error)
+
+  // Fortunalty slotted custom elements do not need to wait for this event.
+  // only need to listen to this event when to update p2p.
+  addEventListener('p2p-update', () => console.log('The P2P set has been updated', p2p))
+</script>
+
 </html>
