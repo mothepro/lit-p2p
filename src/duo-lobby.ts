@@ -133,6 +133,7 @@ export default class extends LitElement {
           ? this.editing
             ? html`
               <mwc-textfield
+                part="name-input"
                 outlined
                 charCounter
                 fullwidth
