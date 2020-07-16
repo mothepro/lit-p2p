@@ -119,37 +119,42 @@ export default class extends LitElement {
   }
 
   protected readonly render = () => html`
-    <mwc-list part="client-list" rootTabbable activatable>${this.clients.map(({ client, action }, index) =>
-    client.isYou
+    <mwc-list
+      part="client-list"
+      rootTabbable
+      activatable>${this.clients.map(({ client, action }, index) => client.isYou
+    ? html`${this.editing
+
+      // Editing own name
       ? html`
+        <mwc-textfield
+          part="name-input"
+          outlined
+          charCounter
+          type="text"
+          label="Your Name"
+          id="field"
+          maxlength=${this.maxlength}
+          value=${client.name}
+          @keydown=${this.nameChange}
+          @blur=${() => this.editing = false}
+        ></mwc-textfield>`
+
+      // Your name in the list
+      : html`
         <mwc-list-item
           part="client is-you"
-          tabindex=${index}
-          hasMeta
-          class=${this.editing && 'tall'}
+          ?hasMeta=${this.canChangeName}
           ?noninteractive=${!this.canChangeName}
-          @request-selected=${() => this.editing = true}>${
-        this.canChangeName
-          ? this.editing
-            ? html`
-              <mwc-textfield
-                part="name-input"
-                outlined
-                charCounter
-                fullwidth
-                type="text"
-                label="Your Name"
-                id="field"
-                maxlength=${this.maxlength}
-                value=${client.name}
-                @keydown=${this.nameChange}
-                @blur=${() => this.editing = false /* TODO do not blur when selected again */}
-              ></mwc-textfield>`
-            : html`${client.name} <mwc-icon part="edit-button" slot="meta">create</mwc-icon>`
-          : client.name}
-      </mwc-list-item>
-      <li divider padded role="separator"></li>`
-      : html`
+          @request-selected=${() => this.editing = true}>
+          ${client.name}
+          ${this.canChangeName ? html`<mwc-icon part="edit-button" slot="meta">create</mwc-icon>` : ''}
+        </mwc-list-item>`}
+
+        <li divider padded role="separator"></li>`
+
+    // Other clients
+    : html`
         <mwc-list-item
           part="client is-other"
           tabindex=${index}
@@ -158,7 +163,7 @@ export default class extends LitElement {
           @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}>
           ${client.name}
           ${action
-          ? html`
+        ? html`
             <mwc-icon-button
               part="accept"
               icon="check_circle"
@@ -175,12 +180,13 @@ export default class extends LitElement {
                 microTick().then(() => action(false)) // Ensure we don't "click" again to propose to the one we rejected
                 this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
               }}></mwc-icon-button>`
-          : this.groupExists!(client)
-            ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
-            : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
+        : this.groupExists!(client)
+          ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
+          : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
         </mwc-list-item>`)}${
-    this.clients.length == 1
-    ? html`
+
+    // Alone slot
+    this.clients.length == 1 ? html`
       <slot name="alone">
         <mwc-list-item part="client is-alone" class="alone" noninteractive>
           Waiting for others to join this lobby.

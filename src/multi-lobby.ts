@@ -203,7 +203,6 @@ export default class extends LitElement {
         part="name-input"
         outlined
         charCounter
-        fullwidth
         type="text"
         label="Your Name"
         id="field"
