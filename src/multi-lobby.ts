@@ -34,7 +34,7 @@ export default class extends LitElement {
   /** Content to show in the snackbar's label given the current proposal. */
   @property({ type: Function, attribute: false })
   proposalLabel = ({ action, members, ack }: Proposal) => `
-    ${action ? 'Join group with' : 'Joining group with'}
+    ${action ? 'Join group with' : 'Waiting to join group with'}
     ${members.map(({name}) => name).join(', ')}
     (${ack.count + (action ? 0 : 1)} / ${1 + members.length})
     ${action ? '' : '...'}`

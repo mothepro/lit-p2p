@@ -147,7 +147,7 @@ export default class extends LitElement {
         this.state = state
       }
     } catch (error) {
-      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error, bubbles: true }))
     }
     setP2P()
     this.state = -1
@@ -163,7 +163,7 @@ export default class extends LitElement {
     try {
       this.p2p?.proposeGroup(...detail)
     } catch (error) {
-      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error, bubbles: true }))
     }
   }
 
