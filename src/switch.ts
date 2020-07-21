@@ -106,7 +106,7 @@ export default class extends LitElement {
 
   /** Whether we should attempt to connect. Defaults */
   @property({ type: Boolean, reflect: true })
-  online = true
+  online = false
 
   /** State of the underlying P2P instance */
   @property({ type: Number, reflect: true })
