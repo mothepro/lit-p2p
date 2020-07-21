@@ -162,31 +162,31 @@ export default class extends LitElement {
 
     // Other clients
     : html`
-        <mwc-list-item
-          part="client is-other"
-          tabindex=${index}
-          ?hasMeta=${!action}
-          ?noninteractive=${!action && this.groupExists!(client)}
-          @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}>
-          ${client.name}
-          ${action
+      <mwc-list-item
+        part="client is-other"
+        tabindex=${index}
+        ?hasMeta=${!action}
+        ?noninteractive=${!action && this.groupExists!(client)}
+        @click=${() => !action && !this.groupExists!(client) && this.dispatchEvent(new CustomEvent('proposal', { detail: [client] }))}>
+        ${client.name}
+        ${action
         ? html`
-            <mwc-icon-button
-              part="accept"
-              icon="check_circle"
-              label="Aceept"
-              @click=${() => {
-                microTick().then(() => action(true)) // Ensure we don't "click" again to propose to the one we rejected
-                this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
-              }}></mwc-icon-button>
-            <mwc-icon-button
-              part="reject"
-              icon="cancel"
-              label="Reject"
-              @click=${() => {
-                microTick().then(() => action(false)) // Ensure we don't "click" again to propose to the one we rejected
-                this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
-              }}></mwc-icon-button>`
+          <mwc-icon-button
+            part="accept"
+            icon="check_circle"
+            label="Aceept"
+            @click=${() => {
+              microTick().then(() => action(true)) // Ensure we don't "click" again to propose to the one we rejected
+              this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
+            }}></mwc-icon-button>
+          <mwc-icon-button
+            part="reject"
+            icon="cancel"
+            label="Reject"
+            @click=${() => {
+              microTick().then(() => action(false)) // Ensure we don't "click" again to propose to the one we rejected
+              this.clients = this.clients.map(item => item.client == client ? { client, action: undefined } : item)
+            }}></mwc-icon-button>`
         : this.groupExists!(client)
           ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
           : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}

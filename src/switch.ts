@@ -1,6 +1,6 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import storage from 'std:kv-storage'
-import { LitElement, html, customElement, property } from 'lit-element'
+import { LitElement, html, customElement, property, PropertyValues } from 'lit-element'
 import P2P, { State, Sendable } from '@mothepro/fancy-p2p'
 import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
 
@@ -104,19 +104,33 @@ export default class extends LitElement {
   @property({ type: String, attribute: 'offline-hash' })
   offlineHash = '#p2p-offline'
 
-  @property({ type: Number, reflect: true })
-  state = this.forceOffline ? -1 : State.OFFLINE
+  /** Whether we should attempt to connect. Defaults */
+  @property({ type: Boolean, reflect: true })
+  online = true
 
-  get forceOffline() { return location.hash == this.offlineHash }
+  /** State of the underlying P2P instance */
+  @property({ type: Number, reflect: true })
+  state = this.isActuallyOnline ? State.OFFLINE : -1
 
   public p2p?: P2P
 
-  protected async firstUpdated() {
-    addEventListener('hashchange', () => this.forceOffline && this.p2p?.leaveLobby())
-    if (!this.forceOffline)
-      this.connect(this.localStorage
-        ? (await storage.get(Keys.NAME) || '').toString()
-        : this.name)
+  // TODO, I hate this
+  private get isActuallyOnline() { return this.online && location.hash != this.offlineHash }
+
+  protected firstUpdated() {
+    addEventListener('hashchange', () => this.online = this.isActuallyOnline)
+  }
+
+  // When online status changes, make sure p2p state matches
+  protected async updated(changed: PropertyValues) {
+    if (changed.has('online')) {
+      if (this.isActuallyOnline)
+        this.connect(this.localStorage && !this.name
+          ? (await storage.get(Keys.NAME) || '').toString()
+          : this.name)
+      else
+        this.p2p?.leaveLobby()
+    }
   }
 
   private async connect(name: string) {
@@ -162,7 +176,7 @@ export default class extends LitElement {
   }
 
   protected readonly render = () => {
-    if (!this.forceOffline && this.p2p?.stateChange.isAlive)
+    if (this.isActuallyOnline && this.p2p?.stateChange.isAlive)
       switch (this.p2p!.state) {
         case State.LOBBY:
           return this.minPeers == 1 && this.maxPeers == 1
