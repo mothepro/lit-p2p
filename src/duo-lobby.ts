@@ -1,7 +1,8 @@
 import { LitElement, html, customElement, property, css, internalProperty } from 'lit-element'
+import storage from 'std:kv-storage'
+import { Keys } from './switch.js'
 import type { SafeListener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
-import type { RequestSelectedDetail } from '@material/mwc-list/mwc-list-item.js'
 
 import '@material/mwc-list'
 import '@material/mwc-list/mwc-list-item.js'
@@ -32,6 +33,10 @@ export default class extends LitElement {
   /** Name of the user. An anonymous one may be set be the server if left unassigned. */
   @property({ type: Boolean, reflect: true, attribute: 'can-change-name' })
   canChangeName = false
+
+  /** Whether to store the user's name in local kv-storage. */
+  @property({ type: Boolean, attribute: 'local-storage' })
+  localStorage = false
 
   /** Max length of user's name */
   @property({ type: Number })
@@ -112,6 +117,8 @@ export default class extends LitElement {
       const detail = (target as HTMLInputElement).value
       if (this.name != detail) {
         this.name = detail
+        if (this.localStorage)
+          storage.set(Keys.NAME, detail)
         this.dispatchEvent(new CustomEvent('name-change', { detail }))
       }
       this.editing = false

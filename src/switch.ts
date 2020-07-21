@@ -16,9 +16,9 @@ export interface Peers<T extends Sendable = Sendable> {
 }
 
 /** Keys for storing data in kv-storage */
-const enum Keys {
+export const enum Keys {
   /** The name of the user to connect in the lobby as. */
-  NAME = 'name'
+  NAME = 'p2p-name'
 }
 
 declare global {
@@ -153,12 +153,6 @@ export default class extends LitElement {
     this.state = -1
   }
 
-  private nameChanged({ detail }: NameChangeEvent) {
-    if (this.localStorage)
-      storage.set(Keys.NAME, this.name = detail)
-    this.connect(this.name)
-  }
-
   private proposal({ detail }: ProposalEvent) {
     try {
       this.p2p?.proposeGroup(...detail)
@@ -182,7 +176,8 @@ export default class extends LitElement {
               .connection=${this.p2p.lobbyConnection}
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
-              @name-change=${this.nameChanged}
+              ?local-storage=${this.localStorage}
+              @name-change=${({ detail }: NameChangeEvent) => this.connect(this.name = detail)}
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
             : html`
@@ -198,7 +193,8 @@ export default class extends LitElement {
               .connection=${this.p2p.lobbyConnection}
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
-              @name-change=${this.nameChanged}
+              ?local-storage=${this.localStorage}
+              @name-change=${({ detail }: NameChangeEvent) => this.connect(this.name = detail)}
               @proposal=${this.proposal}
             ></p2p-multi-lobby>`
 
