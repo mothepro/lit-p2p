@@ -55,10 +55,6 @@
     "lit-html/": "https://unpkg.com/lit-html@1.2.1/",
     "lit-html": "https://unpkg.com/lit-html@1.2.1/lit-html.js",
     "simple-peer": "https://unpkg.com/simple-peer@9.7.2/simplepeer.min.js",
-    "std:kv-storage": [
-      "std:kv-storage",
-      "https://unpkg.com/kv-storage-polyfill@2.0.0/dist/kv-storage-polyfill.mjs"
-    ],
     "tslib": "https://unpkg.com/tslib@2.0.0/tslib.es6.js"
   }
 }

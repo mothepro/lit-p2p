@@ -1,5 +1,4 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
-import storage from 'std:kv-storage'
 import { LitElement, html, customElement, property, PropertyValues } from 'lit-element'
 import P2P, { State, Sendable } from '@mothepro/fancy-p2p'
 import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
@@ -15,7 +14,7 @@ export interface Peers<T extends Sendable = Sendable> {
   readonly online: boolean
 }
 
-/** Keys for storing data in kv-storage */
+/** Keys for storing data in local storage */
 export const enum Keys {
   /** The name of the user to connect in the lobby as. */
   NAME = 'p2p-name'
@@ -84,7 +83,7 @@ export default class extends LitElement {
   @property({ type: Number, reflect: true })
   proposalTimeout = -1
 
-  /** Whether to store the user's name in local kv-storage. */
+  /** Whether to store the user's name in local storage. */
   @property({ type: Boolean, attribute: 'local-storage' })
   localStorage = false
 
@@ -126,7 +125,7 @@ export default class extends LitElement {
     if (changed.has('online')) {
       if (this.isActuallyOnline)
         this.connect(this.localStorage && !this.name
-          ? (await storage.get(Keys.NAME) || '').toString()
+          ? (localStorage.getItem(Keys.NAME) ?? '').toString()
           : this.name)
       else
         this.p2p?.leaveLobby()

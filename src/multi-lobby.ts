@@ -1,5 +1,4 @@
 import { LitElement, html, customElement, property, css, internalProperty } from 'lit-element'
-import storage from 'std:kv-storage'
 import { Keys } from './switch.js'
 import type { SafeListener, Listener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
@@ -45,7 +44,7 @@ export default class extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: 'can-change-name' })
   canChangeName = false
 
-  /** Whether to store the user's name in local kv-storage. */
+  /** Whether to store the user's name in local storage. */
   @property({ type: Boolean, attribute: 'local-storage' })
   localStorage = false
 
@@ -186,7 +185,7 @@ export default class extends LitElement {
       if (this.name != detail) {
         this.name = detail
         if (this.localStorage)
-          storage.set(Keys.NAME, detail)
+          localStorage.setItem(Keys.NAME, detail)
         this.dispatchEvent(new CustomEvent('name-change', { detail }))
       }
       this.editing = false
