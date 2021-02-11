@@ -32,26 +32,26 @@
   },
   "devDependencies": {
     "@mothepro/signaling-lobby": "^0.3.3",
-    "@types/mocha": "^7.0.2",
-    "@types/should-sinon": "^0.0.6",
+    "@types/mocha": "^8.2.0",
+    "@types/should-sinon": "^0.0.8",
     "gh-pages": "^3.1.0",
     "importly": "^0.1.0-dev.0",
-    "mocha": "^8.0.1",
-    "np": "^6.3.0",
+    "mocha": "^8.3.0",
+    "np": "^7.3.0",
     "replace": "^1.2.0",
     "should": "^13.2.3",
     "should-sinon": "^0.0.6",
-    "sinon": "^9.0.2",
-    "typescript": "^3.9.6"
+    "sinon": "^9.2.4",
+    "typescript": "^4.1.5"
   },
   "dependencies": {
-    "@material/fab": "^7.0.0",
-    "@material/mwc-icon": "^0.17.2",
-    "@material/mwc-icon-button": "^0.17.2",
-    "@material/mwc-list": "^0.17.2",
-    "@material/mwc-snackbar": "^0.17.2",
-    "@material/textfield": "^7.0.0",
-    "@mothepro/fancy-p2p": "^0.0.17",
-    "lit-element": "^2.3.1"
+    "@material/fab": "^10.0.0",
+    "@material/mwc-icon": "^0.20.0",
+    "@material/mwc-icon-button": "^0.20.0",
+    "@material/mwc-list": "^0.20.0",
+    "@material/mwc-snackbar": "^0.20.0",
+    "@material/textfield": "^10.0.0",
+    "@mothepro/fancy-p2p": "^0.0.20",
+    "lit-element": "^2.4.0"
   }
 }
