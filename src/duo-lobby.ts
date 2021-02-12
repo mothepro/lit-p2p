@@ -1,10 +1,8 @@
 import { LitElement, html, customElement, property, css, internalProperty } from 'lit-element'
-import { Keys } from './lit-p2p.js'
 import type { SafeListener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
 
 import '@material/mwc-list'
-import '@material/mwc-list/mwc-list-item.js'
 import '@material/mwc-icon-button'
 import '@material/mwc-icon'
 import '@material/mwc-textfield'

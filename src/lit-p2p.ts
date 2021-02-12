@@ -38,6 +38,7 @@ const mockPeer = new MockPeer(''),
   }
 
 function globalBindP2P(data: readyP2P = mockReadyP2P) {
+  // TODO destruct and rebuild for real private props??
   window.p2p = data
   dispatchEvent(new CustomEvent('p2p-update', { detail: data.peers.length > 1, bubbles: true, composed: true }))
 }
