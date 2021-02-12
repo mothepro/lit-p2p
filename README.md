@@ -1,19 +1,19 @@
-# P2p Duo Lobby
+# `<lit-p2p>`
 
 > A web component to simplify finding peers using fancy-p2p and material UI
 
-[![npm](https://img.shields.io/npm/v/p2p-duo-lobby.svg)](https://www.npmjs.com/package/p2p-duo-lobby)
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/p2p-duo-lobby)
+[![npm](https://img.shields.io/npm/v/lit-p2p.svg)](https://www.npmjs.com/package/lit-p2p)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/lit-p2p)
 
 ## Install
 
-`yarn add p2p-duo-lobby`
+`yarn add lit-p2p`
 
 ## How to Use
 
 | Attribute | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
-| `hidden` | `boolean` | `false` | Whether the element should be displayed |
+| `online` | `boolean` | `false` | Whether the element should attempt to connect to lobby |
 
 <!--
 Inline demo for webcomponents.org
@@ -33,7 +33,7 @@ Inline demo for webcomponents.org
   This means use of an import map isn't needed.
   @see https://unpkg.com#query-params
 -->
-<script type="module" src="//unpkg.com/p2p-duo-lobby/dist/esm/index.js?module"></script>
+<script type="module" src="//unpkg.com/lit-p2p/dist/esm/index.js?module"></script>
 
 
 ```
@@ -41,6 +41,5 @@ Inline demo for webcomponents.org
 TODO
 + Better docs API
 + Usable Demo
-+ Timeout for proposals
 + Improve method for passing `READY` state data to `<slot>`
 + Show who ack'd proposal

@@ -33,10 +33,6 @@ export default class extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: 'can-change-name' })
   canChangeName = false
 
-  /** Whether to store the user's name in local storage. */
-  @property({ type: Boolean, attribute: 'local-storage' })
-  localStorage = false
-
   /** Max length of user's name */
   @property({ type: Number })
   maxlength = 100
@@ -116,8 +112,6 @@ export default class extends LitElement {
       const detail = (target as HTMLInputElement).value
       if (this.name != detail) {
         this.name = detail
-        if (this.localStorage)
-          localStorage.setItem(Keys.NAME, detail)
         this.dispatchEvent(new CustomEvent('name-change', { detail }))
       }
       this.editing = false
