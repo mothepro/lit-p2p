@@ -57,7 +57,7 @@ export default class extends LitElement {
    * An anonymous one *may* be set be the server if left unassigned.
    * This attribute is updated to match what the signaling server returns as your name.
    */
-  @property({ type: String, reflect: true, noAccessor: true })
+  @property({ type: String, reflect: true })
   name = ''
 
   /** List of STUN servers to broker P2P connections. */
@@ -69,22 +69,22 @@ export default class extends LitElement {
   signaling!: string
 
   /** Version of the signaling server. */
-  @property({ type: String, reflect: true })
+  @property({ type: String })
   version!: string
 
   /** Number of times to attempt to make an RTC connection. Defaults to 1 */
-  @property({ type: Number, reflect: true })
+  @property({ type: Number })
   retries!: number
 
   @property({ type: String })
   lobby!: string
 
   /** The number of milliseconds to wait before giving up on the direct connection. Doesn't give up by default */
-  @property({ type: Number, reflect: true })
+  @property({ type: Number })
   timeout!: number
 
   /** The number of milliseconds to wait before rejecting a proposal (when maxpeers > 1). Doesn't give up by default */
-  @property({ type: Number, reflect: true })
+  @property({ type: Number })
   proposalTimeout = -1
 
   /** Whether to store the user's name in local storage. */
@@ -92,7 +92,7 @@ export default class extends LitElement {
   localStorage = false
 
   /** Max length of user's name */
-  @property({ type: Number, attribute: 'maxlength' })
+  @property({ type: Number, attribute: 'max-length' })
   maxlength = 50
 
   /** The minimum number of other connections that can be made in the lobby. */
@@ -103,7 +103,7 @@ export default class extends LitElement {
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 1
 
-  /** State of the underlying P2P instance. Negative one when not connected */
+  /** State of the underlying P2P instance. Negative one when not connected & not trying to */
   @property({ type: Number, reflect: true })
   state = -1
 
@@ -114,30 +114,26 @@ export default class extends LitElement {
     if (changed.has('state') && this.state == State.READY)
       globalBindP2P(this.p2p)
     
-    if (changed.has('name')) {
+    if (changed.has('name'))
       // @ts-ignore Reset mock peer's name
       mockPeer.name = this.name
-
-      if (this.localStorage && this.name)
-        localStorage.setItem(Keys.NAME, this.name)
-    }
     
     if (changed.has('online')) {
-      if (this.online)
-        this.connect(this.localStorage && !this.name
-          ? (localStorage.getItem(Keys.NAME) ?? '').toString()
-          : this.name)
-      else
+      if (this.online) {
+        if (this.localStorage && !this.name)
+          this.name = (localStorage.getItem(Keys.NAME) ?? this.name).toString()
+        this.connect()
+      } else
         this.p2p?.leaveLobby()
     }
   }
 
-  /** Attempt to connect to the lobby with the given name */
-  private async connect(name: string) {
+  /** Attempt to connect to the lobby */
+  private async connect() {
     try {
       this.p2p?.leaveLobby()
       this.p2p = new P2P({
-        name,
+        name: this.name,
         retries: this.retries,
         timeout: this.timeout,
         stuns: this.stuns,
@@ -159,6 +155,14 @@ export default class extends LitElement {
       globalBindP2P()
       this.state = -1
     }
+  }
+
+  /** Only called when the user changes their own name */
+  private saveNameAndConnect({ detail }: NameChangeEvent) {
+    this.name = detail
+    if (this.localStorage && this.name)
+      localStorage.setItem(Keys.NAME, this.name)
+    this.connect()
   }
 
   private proposal({ detail }: ProposalEvent) {
@@ -185,7 +189,7 @@ export default class extends LitElement {
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
               ?local-storage=${this.localStorage}
-              @name-change=${({ detail }: NameChangeEvent) => this.connect(detail)}
+              @name-change=${this.saveNameAndConnect}
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
             : html`
@@ -202,7 +206,7 @@ export default class extends LitElement {
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
               ?local-storage=${this.localStorage}
-              @name-change=${({ detail }: NameChangeEvent) => this.connect(detail)}
+              @name-change=${this.saveNameAndConnect}
               @proposal=${this.proposal}
             ></p2p-multi-lobby>`
 
