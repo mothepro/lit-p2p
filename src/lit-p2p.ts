@@ -1,6 +1,6 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import { LitElement, html, customElement, property, PropertyValues } from 'lit-element'
-import P2P, { State, Sendable } from '@mothepro/fancy-p2p'
+import P2P, { State } from '@mothepro/fancy-p2p'
 import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
 
 import './duo-lobby.js'
@@ -211,7 +211,8 @@ export default class extends LitElement {
             <slot name="p2p" online>
               Access P2P by listening to the <code>p2p-update</code> event on the <code>document</code>
               and use <code>window.p2p</code> to access peers.
-            </slot>`
+            </slot>
+            <slot name="ready">Ready</slot>`
 
         case State.OFFLINE:
           return html`<slot></slot><slot name="offline">Connecting</slot>`
