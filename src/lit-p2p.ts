@@ -43,13 +43,17 @@ function globalBindP2P(data: readyP2P = mockReadyP2P) {
   dispatchEvent(new CustomEvent('p2p-update', { detail: data.peers.length > 1, bubbles: true, composed: true }))
 }
 
+// `window.p2p` should be accessible ASAP, Don't wait for element to load.
 globalBindP2P()
 
 @customElement('lit-p2p')
 export default class extends LitElement {
-  /** Whether the element should attempt to connect to lobby. */
-  @property({ type: Boolean })
-  online = false
+  /**
+   * State of the underlying P2P instance.
+   * Defaults to `-1` Disconnected (not connected & not trying to).
+   */
+  @property({ type: Number, reflect: true })
+  state = -1
 
   /**
    * Name of the user.
@@ -103,35 +107,48 @@ export default class extends LitElement {
   @property({ type: Number, attribute: 'max-peers' })
   maxPeers = 1
 
-  /** State of the underlying P2P instance. Negative one when not connected & not trying to */
-  @property({ type: Number, reflect: true })
-  state = -1
-
   public p2p?: P2P
 
-  // When online status changes, make sure p2p state matches
   protected async updated(changed: PropertyValues) {
-    if (changed.has('state') && this.state == State.READY)
-      globalBindP2P(this.p2p)
-    
     if (changed.has('name'))
       // @ts-ignore Reset mock peer's name
       mockPeer.name = this.name
-    
-    if (changed.has('online')) {
-      if (this.online) {
-        if (this.localStorage && !this.name)
-          this.name = (localStorage.getItem(Keys.NAME) ?? this.name).toString()
-        this.connect()
-      } else
-        this.p2p?.leaveLobby()
-    }
+
+    if (changed.has('state'))
+      switch (this.state) {
+        case -1: // Disconnect & reset `window.p2p` to mocked
+          if (this.p2p) {
+            this.p2p.leaveLobby()
+            globalBindP2P()
+          }
+          break
+        
+        case State.OFFLINE: // Try to get name and reconnect to server
+          if (this.localStorage && !this.name)
+            this.name = (localStorage.getItem(Keys.NAME) ?? '').toString()
+          this.p2p?.leaveLobby()
+          this.connect()
+          break
+
+        case State.READY: // Bind established p2p to the global `window.p2p`
+          globalBindP2P(this.p2p)
+          break
+      }
+  }
+
+  /** Only called when the **user** changes their own name. */
+  // TODO the only reason we do this instead of in the updater is to **not** save the random servere name in local storage.
+  private saveNameAndReconnect({ detail }: NameChangeEvent) {
+    this.name = detail
+    if (this.localStorage && this.name)
+      localStorage.setItem(Keys.NAME, this.name)
+    this.p2p?.leaveLobby()
+    this.connect()
   }
 
   /** Attempt to connect to the lobby */
   private async connect() {
     try {
-      this.p2p?.leaveLobby()
       this.p2p = new P2P({
         name: this.name,
         retries: this.retries,
@@ -144,7 +161,7 @@ export default class extends LitElement {
         },
       })
 
-      // Set my name (the attribute) to the name of my client. This ensures it is consistent with server.
+      // Set the name attribute to the name of my client. This ensures that we are consistent with server.
       this.p2p.lobbyConnection.next.then(({ name }) => this.name = name)
 
       for await (const state of this.p2p!.stateChange)
@@ -152,17 +169,8 @@ export default class extends LitElement {
     } catch (error) {
       this.dispatchEvent(new ErrorEvent('p2p-error', { error, bubbles: true }))
     } finally {
-      globalBindP2P()
       this.state = -1
     }
-  }
-
-  /** Only called when the user changes their own name */
-  private saveNameAndConnect({ detail }: NameChangeEvent) {
-    this.name = detail
-    if (this.localStorage && this.name)
-      localStorage.setItem(Keys.NAME, this.name)
-    this.connect()
   }
 
   private proposal({ detail }: ProposalEvent) {
@@ -174,8 +182,8 @@ export default class extends LitElement {
   }
 
   protected readonly render = () => {
-    if (this.online && this.p2p?.stateChange.isAlive)
-      switch (this.p2p!.state) {
+    if (this.p2p?.stateChange.isAlive)
+      switch (this.p2p.state) {
         case State.LOBBY:
           return this.minPeers == 1 && this.maxPeers == 1
             ? html`
@@ -189,7 +197,7 @@ export default class extends LitElement {
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
               ?local-storage=${this.localStorage}
-              @name-change=${this.saveNameAndConnect}
+              @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
             : html`
@@ -206,7 +214,7 @@ export default class extends LitElement {
               .groupExists=${this.p2p.groupExists}
               ?can-change-name=${this.localStorage}
               ?local-storage=${this.localStorage}
-              @name-change=${this.saveNameAndConnect}
+              @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
             ></p2p-multi-lobby>`
 

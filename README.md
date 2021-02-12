@@ -13,7 +13,7 @@
 
 | Attribute | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
-| `online` | `boolean` | `false` | Whether the element should attempt to connect to lobby |
+| `state` | `number` | `-1` Disconnected | State of the underlying P2P instance. **Include this attribute to start!** |
 
 <!--
 Inline demo for webcomponents.org
