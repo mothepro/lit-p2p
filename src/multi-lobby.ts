@@ -1,5 +1,5 @@
 import { LitElement, html, customElement, property, css, internalProperty } from 'lit-element'
-import { Keys } from './switch.js'
+import { Keys } from './lit-p2p.js'
 import type { SafeListener, Listener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
 import type { MultiSelectedEvent } from '@material/mwc-list/mwc-list-foundation'

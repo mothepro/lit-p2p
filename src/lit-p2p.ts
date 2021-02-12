@@ -44,7 +44,7 @@ function globalBindP2P(data: readyP2P = mockReadyP2P) {
 
 globalBindP2P()
 
-@customElement('p2p-switch')
+@customElement('lit-p2p')
 export default class extends LitElement {
   /** Whether the element should attempt to connect to lobby. */
   @property({ type: Boolean })

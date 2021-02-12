@@ -18,7 +18,7 @@
 </head>
 
 <body>
-  <p2p-switch
+  <lit-p2p
     online
     local-storage
     min-peers=1
@@ -27,7 +27,7 @@
 
     signaling="wss://ws.parkshade.com:443"
     version="0.3.2"
-    lobby="p2p-duo-lobby"
+    lobby="lit-p2p-demo"
     timeout=20000
     stuns='[
       "stun:stun.stunprotocol.org",
@@ -37,8 +37,8 @@
       "stun:stun3.l.google.com:19302",
       "stun:stun4.l.google.com:19302"
     ]'>
-    <p>A slot of the <code>&lt;p2p-switch&gt;</code></p>
-  </p2p-switch>
+    <p>A slot of the <code>&lt;lit-p2p&gt;</code></p>
+  </lit-p2p>
 </body>
 
 <script>
