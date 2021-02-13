@@ -193,7 +193,6 @@ export default class extends LitElement {
           return this.minPeers == 1 && this.maxPeers == 1
             ? html`
             <slot></slot>
-            <slot name="lobby"></slot>
             <p2p-duo-lobby
               part="lobby"
               exportparts="client-list , client , is-you , is-other , is-alone , can-edit , can-not-edit , name-input , accept , reject , waiting , invite"
@@ -204,10 +203,11 @@ export default class extends LitElement {
               .groupExists=${this.p2p.groupExists}
               @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
-            ></p2p-duo-lobby>`
+            >
+              <slot name="lobby"></slot>
+            </p2p-duo-lobby>`
             : html`
             <slot></slot>
-            <slot name="lobby"></slot>
             <p2p-multi-lobby
               part="lobby"
               exportparts="client-list , client , is-you , is-other , is-alone , can-edit , can-not-edit , name-input , make-group"
@@ -221,7 +221,9 @@ export default class extends LitElement {
               .groupExists=${this.p2p.groupExists}
               @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
-            ></p2p-multi-lobby>`
+            >
+              <slot name="lobby"></slot>
+            </p2p-multi-lobby>`
 
         case State.READY:
           return html`
@@ -233,12 +235,19 @@ export default class extends LitElement {
             </slot>`
 
         case State.OFFLINE:
-          return html`<slot></slot><slot name="offline">Connecting</slot>`
+          return html`
+            <slot></slot>
+            <slot name="offline">Connecting</slot>`
 
         case State.LOADING:
-          return html`<slot></slot><slot name="loading">Loading</slot>`
+          return html`
+            <slot></slot>
+            <slot name="loading">Loading</slot>`
       }
 
-    return html`<slot></slot><slot name="p2p" offline></slot><slot name="disconnected">Disconnected</slot>`
+    return html`
+      <slot></slot>
+      <slot name="p2p" offline></slot>
+      <slot name="disconnected">Disconnected</slot>`
   }
 }

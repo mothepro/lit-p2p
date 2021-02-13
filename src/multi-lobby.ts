@@ -225,6 +225,7 @@ export default class extends LitElement {
       <span part="is-you can-not-edit">
         ${this.name}
       </span>`}
+    <slot></slot>
     <mwc-list
       part="client-list"
       multi

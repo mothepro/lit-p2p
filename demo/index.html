@@ -18,18 +18,18 @@
 
   <style>
     :root {
-      --mdc-typography-button-text-transform: inital;
+      --mdc-typography-button-text-transform: initial;
+      --mdc-theme-primary: black;
     }
 
-    [slot="lobby"] {
-      display: none;
+    .welcome {
       line-height: 36px; /* button height */
     }
 
-    lit-p2p[state="1"] [slot="lobby"] {
-      display: inline;
+    lit-p2p:not([state="1"]) [slot="lobby"],
+    lit-p2p:not([state="1"]) .lobby {
+      display: none;
     }
-    /* lit-p2p:not([state="1"]) [slot="lobby"] */
   </style>
 </head>
 
@@ -54,7 +54,10 @@
       "stun:stun4.l.google.com:19302"
     ]'>
     <p>This is a slot of <code>&lt;lit-p2p&gt;</code></p>
-    <span slot="lobby">Welcome,</span>
+    
+    <span class="lobby welcome">Welcome,</span>
+    <span slot="lobby" class="welcome">to the p2p lobby!</span>
+    <hr slot="lobby" />
   </lit-p2p>
 </body>
 
