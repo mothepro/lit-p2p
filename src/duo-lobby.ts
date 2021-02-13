@@ -90,7 +90,7 @@ export default class extends LitElement {
 
       // Update UI every time a client accepts or rejects the proposal
       ack.on(() => this.requestUpdate())
-        .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error })))
+        .catch(error => this.dispatchEvent(new ErrorEvent('p2p-error', { error, bubbles: true })))
         .finally(() => this.requestUpdate())
     }
     this.clients = this.clients.filter(({ client: currentClient }) => currentClient != client)

@@ -132,7 +132,7 @@ export default class extends LitElement {
         this.requestUpdate() // updates # in snackbar
     } catch (error) {
       error.fatal = false
-      this.dispatchEvent(new ErrorEvent('p2p-error', { error }))
+      this.dispatchEvent(new ErrorEvent('p2p-error', { error, bubbles: true }))
     }
     
     // Remove this from current proposal, or queue
