@@ -116,13 +116,6 @@ export default class extends LitElement {
 
     if (changed.has('state'))
       switch (this.state) {
-        case -1: // Disconnect & reset `window.p2p` to mocked
-          if (this.p2p) {
-            this.p2p.leaveLobby()
-            globalBindP2P()
-          }
-          break
-        
         case State.OFFLINE: // Try to get name and reconnect to server
           if (this.localStorage && !this.name)
             this.name = (localStorage.getItem(Keys.NAME) ?? '').toString()
@@ -132,6 +125,18 @@ export default class extends LitElement {
 
         case State.READY: // Bind established p2p to the global `window.p2p`
           globalBindP2P(this.p2p)
+          break
+        
+        case State.LOADING:
+        case State.LOBBY:
+          break
+        
+        default: // Disconnect & reset `window.p2p` to mocked
+          if (this.p2p) {
+            this.p2p.leaveLobby()
+            globalBindP2P()
+          }
+          this.requestUpdate() // since render has already been called, ensure we are disconnected now.
           break
       }
   }
@@ -221,11 +226,11 @@ export default class extends LitElement {
         case State.READY:
           return html`
             <slot></slot>
-            <slot name="p2p" online>
+            <slot name="p2p" online></slot>
+            <slot name="ready">
               Access P2P by listening to the <code>p2p-update</code> event on the <code>document</code>
               and use <code>window.p2p</code> to access peers.
-            </slot>
-            <slot name="ready">Ready</slot>`
+            </slot>`
 
         case State.OFFLINE:
           return html`<slot></slot><slot name="offline">Connecting</slot>`
