@@ -188,32 +188,32 @@ export default class extends LitElement {
           return this.minPeers == 1 && this.maxPeers == 1
             ? html`
             <slot></slot>
+            <slot name="lobby"></slot>
             <p2p-duo-lobby
               part="lobby"
-              exportparts="client-list , client , is-you , is-other , is-alone , name-input , edit-button , accept , reject , waiting , invite"
+              exportparts="client-list , client , is-you , is-other , is-alone , can-edit , can-not-edit , name-input , accept , reject , waiting , invite"
               name=${this.name}
               maxlength=${this.maxlength}
+              ?can-change-name=${this.localStorage}
               .connection=${this.p2p.lobbyConnection}
               .groupExists=${this.p2p.groupExists}
-              ?can-change-name=${this.localStorage}
-              ?local-storage=${this.localStorage}
               @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
             ></p2p-duo-lobby>`
             : html`
             <slot></slot>
+            <slot name="lobby"></slot>
             <p2p-multi-lobby
               part="lobby"
-              exportparts="client-list , client , is-you , is-other , is-alone , name-input , edit-button , make-group"
+              exportparts="client-list , client , is-you , is-other , is-alone , can-edit , can-not-edit , name-input , make-group"
               name=${this.name}
               timeout=${this.proposalTimeout}
               maxlength=${this.maxlength}
               max-peers=${this.maxPeers}
               min-peers=${this.minPeers}
+              ?can-change-name=${this.localStorage}
               .connection=${this.p2p.lobbyConnection}
               .groupExists=${this.p2p.groupExists}
-              ?can-change-name=${this.localStorage}
-              ?local-storage=${this.localStorage}
               @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
             ></p2p-multi-lobby>`

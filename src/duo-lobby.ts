@@ -2,9 +2,9 @@ import { LitElement, html, customElement, property, css, internalProperty } from
 import type { SafeListener } from 'fancy-emitter'
 import type { Client } from '@mothepro/fancy-p2p'
 
+import '@material/mwc-button'
 import '@material/mwc-list'
 import '@material/mwc-icon-button'
-import '@material/mwc-icon'
 import '@material/mwc-textfield'
 
 export type NameChangeEvent = CustomEvent<string>
@@ -116,43 +116,44 @@ export default class extends LitElement {
     }
   }
 
-  protected readonly render = () => html`
+  protected readonly render = () => html`${this.editing
+    // Editing own name textfield
+    ? html`
+      <mwc-textfield
+        part="name-input"
+        outlined
+        charCounter
+        type="text"
+        label="Your Name"
+        id="field"
+        maxlength=${this.maxlength}
+        value=${this.name}
+        @keydown=${this.nameChange}
+        @blur=${() => this.editing = false}
+      ></mwc-textfield>`
+
+    : this.canChangeName
+      // Your name as an 'editable' button
+      ? html`
+      <mwc-button
+        part="is-you can-edit"
+        trailingIcon
+        icon="create"
+        label=${this.name}
+        title="Change your name"
+        @click=${() => this.editing = true}
+      ></mwc-button>`
+
+      // Your name plain-text
+      : html`
+      <span part="is-you can-not-edit">
+        ${this.name}
+      </span>`}
     <mwc-list
       part="client-list"
       rootTabbable
-      activatable>${this.clients.map(({ client, action }, index) => client.isYou
-    ? html`${this.editing
-
-      // Editing own name
-      ? html`
-        <mwc-textfield
-          part="name-input"
-          outlined
-          charCounter
-          type="text"
-          label="Your Name"
-          id="field"
-          maxlength=${this.maxlength}
-          value=${client.name}
-          @keydown=${this.nameChange}
-          @blur=${() => this.editing = false}
-        ></mwc-textfield>`
-
-      // Your name in the list
-      : html`
-        <mwc-list-item
-          part="client is-you"
-          ?hasMeta=${this.canChangeName}
-          ?noninteractive=${!this.canChangeName}
-          @request-selected=${() => this.editing = true}>
-          ${client.name}
-          ${this.canChangeName ? html`<mwc-icon part="edit-button" slot="meta">create</mwc-icon>` : ''}
-        </mwc-list-item>`}
-
-        <li divider padded role="separator"></li>`
-
-    // Other clients
-    : html`
+      activatable
+    >${this.clients.filter(({ client }) => !client.isYou).map(({ client, action }, index) => html`
       <mwc-list-item
         part="client is-other"
         tabindex=${index}

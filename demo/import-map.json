@@ -2,6 +2,8 @@
   "imports": {
     "@material/base/": "https://unpkg.com/@material/base@10.0.0/",
     "@material/base": "https://unpkg.com/@material/base@10.0.0/dist/mdc.base.js",
+    "@material/button/": "https://unpkg.com/@material/button@10.0.0/",
+    "@material/button": "https://unpkg.com/@material/button@10.0.0/dist/mdc.button.js",
     "@material/dom/": "https://unpkg.com/@material/dom@10.0.0/",
     "@material/dom": "https://unpkg.com/@material/dom@10.0.0/dist/mdc.dom.js",
     "@material/list/": "https://unpkg.com/@material/list@10.0.0/",
@@ -24,6 +26,8 @@
     "@material/mwc-list": "https://unpkg.com/@material/mwc-list@0.20.0/mwc-list.js",
     "@material/mwc-ripple/": "https://unpkg.com/@material/mwc-ripple@0.20.0/",
     "@material/mwc-ripple": "https://unpkg.com/@material/mwc-ripple@0.20.0/mwc-ripple.js",
+    "@material/mwc-button/": "https://unpkg.com/@material/mwc-button@0.20.0/",
+    "@material/mwc-button": "https://unpkg.com/@material/mwc-button@0.20.0/mwc-button.js",
     "@material/mwc-icon-button/": "https://unpkg.com/@material/mwc-icon-button@0.20.0/",
     "@material/mwc-icon-button": "https://unpkg.com/@material/mwc-icon-button@0.20.0/mwc-icon-button.js",
     "@material/mwc-icon/": "https://unpkg.com/@material/mwc-icon@0.20.0/",

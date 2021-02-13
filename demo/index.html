@@ -15,6 +15,22 @@
   <script dev-only type=module src="//unpkg.com/@mothepro/es-module-shims@0.0.0/dist/es-module-shims.min.js"></script>
   <script dev-only type=application/javascript src="//unpkg.com/typescript/lib/typescript.js"></script>
   <script dev-only type=module-shim src="../index.ts"></script>
+
+  <style>
+    :root {
+      --mdc-typography-button-text-transform: inital;
+    }
+
+    [slot="lobby"] {
+      display: none;
+      line-height: 36px; /* button height */
+    }
+
+    lit-p2p[state="1"] [slot="lobby"] {
+      display: inline;
+    }
+    /* lit-p2p:not([state="1"]) [slot="lobby"] */
+  </style>
 </head>
 
 <body>
@@ -37,7 +53,8 @@
       "stun:stun3.l.google.com:19302",
       "stun:stun4.l.google.com:19302"
     ]'>
-    <p>A slot of the <code>&lt;lit-p2p&gt;</code></p>
+    <p>This is a slot of <code>&lt;lit-p2p&gt;</code></p>
+    <span slot="lobby">Welcome,</span>
   </lit-p2p>
 </body>
 

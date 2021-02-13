@@ -5,9 +5,10 @@ import type { MultiSelectedEvent } from '@material/mwc-list/mwc-list-foundation'
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import type { Snackbar } from '@material/mwc-snackbar'
 
+import '@material/mwc-button'
 import '@material/mwc-list'
+import '@material/mwc-list/mwc-check-list-item.js'
 import '@material/mwc-icon-button'
-import '@material/mwc-icon'
 import '@material/mwc-fab'
 import '@material/mwc-textfield'
 import '@material/mwc-snackbar'
@@ -184,19 +185,15 @@ export default class extends LitElement {
   }
 
   private selected({ detail: { index } }: MultiSelectedEvent) {
-    this.chosen = new Set(this.clients.filter(({ isYou }, i) => !isYou && index.has(i)))
+    // Double filter since it should exactly match the filter done for rendering
+    this.chosen = new Set(this.clients
+      .filter(({ isYou }) => !isYou)
+      .filter((_, i) => index.has(i)))
   }
 
-  protected readonly render = () => html`
-    <mwc-list
-      part="client-list"
-      multi
-      rootTabbable
-      @selected=${this.selected}>${this.clients.map((client, index) => client.isYou
-    ? html`${this.editing
-
-      // Editing own name
-      ? html`
+  protected readonly render = () => html`${this.editing
+    // Editing own name textfield
+    ? html`
       <mwc-textfield
         part="name-input"
         outlined
@@ -205,28 +202,37 @@ export default class extends LitElement {
         label="Your Name"
         id="field"
         maxlength=${this.maxlength}
-        value=${client.name}
+        value=${this.name}
         @keydown=${this.nameChange}
         @blur=${() => this.editing = false}
       ></mwc-textfield>`
 
-      // Your name in list
-      : html`
-      <mwc-list-item
-        part="client is-you"
-        ?hasMeta=${this.canChangeName}
-        ?noninteractive=${!this.canChangeName}
-        @request-selected=${() => this.editing = true}>
-        ${client.name}
-        ${this.canChangeName ? html`<mwc-icon part="edit-button" slot="meta">create</mwc-icon>` : ''}
-      </mwc-list-item>`}
-      <li divider padded role="separator"></li>`
+    : this.canChangeName
+      // Your name as an 'editable' button
+      ? html`
+      <mwc-button
+        part="is-you can-edit"
+        trailingIcon
+        icon="create"
+        label=${this.name}
+        title="Change your name"
+        @click=${() => this.editing = true}
+      ></mwc-button>`
 
-    // Other clients
-    : html`
-    <mwc-check-list-item part="client is-other">
-      ${client.name}
-    </mwc-check-list-item>`)}${
+      // Your name plain-text
+      : html`
+      <span part="is-you can-not-edit">
+        ${this.name}
+      </span>`}
+    <mwc-list
+      part="client-list"
+      multi
+      rootTabbable
+      @selected=${this.selected}
+    >${this.clients.filter(({ isYou }) => !isYou).map(({ name }) => html`
+      <mwc-check-list-item part="client is-other">
+        ${name}
+      </mwc-check-list-item>`)}${
 
     // No one else in lobby
     this.clients.length == 1
