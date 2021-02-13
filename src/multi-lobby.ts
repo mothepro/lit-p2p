@@ -141,7 +141,7 @@ export default class extends LitElement {
     
     // Remove this from current proposal, or queue
     if (clientAcks == this.proposal?.ack)
-      delete this.proposal
+      this.proposal = undefined
     for (const [index, { ack }] of this.proposalQueue.entries())
       if (clientAcks == ack)
         this.proposalQueue.splice(index, 1)
@@ -153,12 +153,13 @@ export default class extends LitElement {
   private handleProposal({ detail: { reason } }: SnackBarClosingEvent) {
     this.proposal?.action!(reason == 'action')
     if (reason == 'action') {
-      delete this.proposal?.action
-        // Keep showing the snackbar
-        ;(this.shadowRoot?.getElementById('active-proposal') as Snackbar)?.show()
+      if (this.proposal?.action)
+        this.proposal.action = undefined
+      // Keep showing the snackbar
+      ;(this.shadowRoot?.getElementById('active-proposal') as Snackbar)?.show()
       this.requestUpdate()
     } else {
-      delete this.proposal
+      this.proposal = undefined
       this.maybeSetActiveProposal()
     }
   }
