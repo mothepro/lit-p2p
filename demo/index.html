@@ -26,14 +26,14 @@
       line-height: 36px; /* button height */
     }
 
-    lit-p2p:not([state="1"]) [slot="lobby"],
-    lit-p2p:not([state="1"]) .lobby {
+    lit-p2p:not([state="1"]) .lobby-only {
       display: none;
     }
   </style>
 </head>
 
 <body>
+  <!-- The `state` attribute auto connects the element to the lobby when ready -->
   <lit-p2p
     state
     local-storage
@@ -54,10 +54,10 @@
       "stun:stun4.l.google.com:19302"
     ]'>
     <p>This is a slot of <code>&lt;lit-p2p&gt;</code></p>
-    
-    <span class="lobby welcome">Welcome,</span>
-    <span slot="lobby" class="welcome">to the p2p lobby!</span>
-    <hr slot="lobby" />
+
+    <span class="lobby-only welcome">Welcome,</span>
+    <span class="lobby-only welcome" slot="lobby">to the p2p lobby!</span>
+    <hr class="lobby-only" slot="lobby" />
   </lit-p2p>
 </body>
 

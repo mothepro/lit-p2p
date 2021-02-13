@@ -55,14 +55,6 @@ export default class extends LitElement {
     :host([hidden]) {
       display: none;
     }
-
-    :host .alone {
-      justify-content: center;
-    }
-
-    :host .tall {
-      height: 85px;
-    }
     
     :host mwc-icon-button {
       position: absolute;
@@ -185,12 +177,9 @@ export default class extends LitElement {
           : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
         </mwc-list-item>`)}${
 
-    // Alone slot
+
+    // No one else in lobby
     this.clients.length == 1 ? html`
-      <slot name="alone">
-        <mwc-list-item part="client is-alone" class="alone" noninteractive>
-          Waiting for others to join this lobby.
-        </mwc-list-item>
-      </slot>` : ''}
+      <slot name="alone"></slot>` : ''}
     </mwc-list>`
 }

@@ -1,5 +1,5 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
-import { LitElement, html, customElement, property, PropertyValues } from 'lit-element'
+import { LitElement, html, customElement, property, PropertyValues, css } from 'lit-element'
 import P2P, { State } from '@mothepro/fancy-p2p'
 import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
 
@@ -109,6 +109,11 @@ export default class extends LitElement {
 
   public p2p?: P2P
 
+  static readonly styles = css`
+    :host .alone {
+      justify-content: center;
+    }`
+
   protected async updated(changed: PropertyValues) {
     if (changed.has('name'))
       // @ts-ignore Reset mock peer's name
@@ -195,7 +200,7 @@ export default class extends LitElement {
             <slot></slot>
             <p2p-duo-lobby
               part="lobby"
-              exportparts="client-list , client , is-you , is-other , is-alone , can-edit , can-not-edit , name-input , accept , reject , waiting , invite"
+              exportparts="client-list , client , is-you , is-other , can-edit , can-not-edit , name-input , accept , reject , waiting , invite"
               name=${this.name}
               maxlength=${this.maxlength}
               ?can-change-name=${this.localStorage}
@@ -205,12 +210,17 @@ export default class extends LitElement {
               @proposal=${this.proposal}
             >
               <slot name="lobby"></slot>
+              <slot name="alone" slot="alone">
+              <mwc-list-item part="client is-alone" class="alone" noninteractive>
+                Waiting for others to join this lobby.
+              </mwc-list-item>
+              </slot>
             </p2p-duo-lobby>`
             : html`
             <slot></slot>
             <p2p-multi-lobby
               part="lobby"
-              exportparts="client-list , client , is-you , is-other , is-alone , can-edit , can-not-edit , name-input , make-group"
+              exportparts="client-list , client , is-you , is-other , can-edit , can-not-edit , name-input , make-group"
               name=${this.name}
               timeout=${this.proposalTimeout}
               maxlength=${this.maxlength}
@@ -223,6 +233,11 @@ export default class extends LitElement {
               @proposal=${this.proposal}
             >
               <slot name="lobby"></slot>
+              <slot name="alone" slot="alone">
+                <mwc-list-item part="client is-alone" class="alone" noninteractive>
+                  Waiting for others to join this lobby.
+                </mwc-list-item>
+              </slot>
             </p2p-multi-lobby>`
 
         case State.READY:

@@ -90,10 +90,6 @@ export default class extends LitElement {
       display: none;
     }
 
-    :host .alone {
-      justify-content: center;
-    }
-
     :host mwc-fab[disabled] { /** How is this not supported natively?? */
       --mdc-theme-on-secondary: white;
       --mdc-theme-secondary: lightgrey;
@@ -237,13 +233,8 @@ export default class extends LitElement {
       </mwc-check-list-item>`)}${
 
     // No one else in lobby
-    this.clients.length == 1
-      ? html`
-      <slot name="alone">
-        <mwc-list-item part="client is-alone" class="alone" noninteractive>
-          Waiting for others to join this lobby.
-        </mwc-list-item>
-      </slot>` : ''}
+    this.clients.length == 1 ? html`
+      <slot name="alone"></slot>` : ''}
     </mwc-list>
     ${this.proposal ? html`
       <mwc-snackbar
