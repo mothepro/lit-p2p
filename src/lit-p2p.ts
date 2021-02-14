@@ -211,9 +211,9 @@ export default class extends LitElement {
             >
               <slot name="lobby"></slot>
               <slot name="alone" slot="alone">
-              <mwc-list-item part="client is-alone" class="alone" noninteractive>
-                Waiting for others to join this lobby.
-              </mwc-list-item>
+                <mwc-list-item part="client is-alone" class="alone" noninteractive>
+                  Waiting for others to join this lobby.
+                </mwc-list-item>
               </slot>
             </p2p-duo-lobby>`
             : html`
@@ -252,17 +252,17 @@ export default class extends LitElement {
         case State.OFFLINE:
           return html`
             <slot></slot>
-            <slot name="offline">Connecting</slot>`
+            <slot name="offline"></slot>`
 
         case State.LOADING:
           return html`
             <slot></slot>
-            <slot name="loading">Loading</slot>`
+            <slot name="loading"></slot>`
       }
 
     return html`
       <slot></slot>
       <slot name="p2p" offline></slot>
-      <slot name="disconnected">Disconnected</slot>`
+      <slot name="disconnected"></slot>`
   }
 }
