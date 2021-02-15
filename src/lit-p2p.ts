@@ -37,10 +37,10 @@ const mockPeer = new MockPeer(''),
       : Math.random(),
   }
 
-let exposedP2P: readyP2P = mockReadyP2P
+let exposedP2P: readyP2P | void
 Object.defineProperty(window, 'p2p', {
   configurable: true,
-  get: () => exposedP2P,
+  get: () => exposedP2P ?? mockReadyP2P,
   // TODO destruct and rebuild `data` to remove access to the real `p2p` props?
   set: function (data: readyP2P) {
     if (data != exposedP2P) {
@@ -98,6 +98,10 @@ export default class extends LitElement {
   /** The number of milliseconds to wait before rejecting a proposal (when maxpeers > 1). Doesn't give up by default */
   @property({ type: Number })
   proposalTimeout = -1
+
+  /** Whether to use the signaling server as a fallback when a direct connection to peer can not be established. */
+  @property({ type: Boolean })
+  fallback = false
 
   /** Whether to store the user's name in local storage. */
   @property({ type: Boolean, attribute: 'local-storage' })
@@ -172,6 +176,7 @@ export default class extends LitElement {
         timeout: this.timeout,
         stuns: this.stuns,
         lobby: this.lobby,
+        fallback: this.fallback,
         server: {
           address: this.signaling,
           version: this.version,
