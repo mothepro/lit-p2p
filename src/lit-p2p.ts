@@ -149,7 +149,9 @@ export default class extends LitElement {
           break
         
         default: // Disconnect & reset `window.p2p` to mocked
-          this.p2p?.leaveLobby()
+          try {
+            this.p2p?.leaveLobby() // this will fail if still loading (timeout)
+          } catch { }
           delete this.p2p
           p2p = mockReadyP2P
           this.requestUpdate() // since render has already been called, ensure we are disconnected now.
