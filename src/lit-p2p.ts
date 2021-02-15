@@ -216,8 +216,8 @@ export default class extends LitElement {
               @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
             >
-              <slot name="lobby"></slot>
-              <slot name="alone" slot="alone">
+              <slot name="p2p-lobby"></slot>
+              <slot name="p2p-alone" slot="alone">
                 <mwc-list-item part="client is-alone" class="alone" noninteractive>
                   Waiting for others to join this lobby.
                 </mwc-list-item>
@@ -239,8 +239,8 @@ export default class extends LitElement {
               @name-change=${this.saveNameAndReconnect}
               @proposal=${this.proposal}
             >
-              <slot name="lobby"></slot>
-              <slot name="alone" slot="alone">
+              <slot name="p2p-lobby"></slot>
+              <slot name="p2p-alone" slot="alone">
                 <mwc-list-item part="client is-alone" class="alone" noninteractive>
                   Waiting for others to join this lobby.
                 </mwc-list-item>
@@ -250,8 +250,7 @@ export default class extends LitElement {
         case State.READY:
           return html`
             <slot></slot>
-            <slot name="p2p" online></slot>
-            <slot name="ready">
+            <slot name="p2p-ready">
               Access P2P by listening to the <code>p2p-update</code> event on the <code>document</code>
               and use <code>window.p2p</code> to access peers.
             </slot>`
@@ -259,17 +258,16 @@ export default class extends LitElement {
         case State.OFFLINE:
           return html`
             <slot></slot>
-            <slot name="offline"></slot>`
+            <slot name="p2p-offline"></slot>`
 
         case State.LOADING:
           return html`
             <slot></slot>
-            <slot name="loading"></slot>`
+            <slot name="p2p-loading"></slot>`
       }
 
     return html`
       <slot></slot>
-      <slot name="p2p" offline></slot>
-      <slot name="disconnected"></slot>`
+      <slot name="p2p-disconnected"></slot>`
   }
 }
