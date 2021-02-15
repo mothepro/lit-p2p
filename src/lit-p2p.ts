@@ -25,7 +25,7 @@ declare global {
     p2p: readyP2P
   }
   /** Bindings from a ready `fancy-p2p` instance set on window by `lit-p2p`. */
-  const p2p: Window['p2p']
+  let p2p: Window['p2p']
 }
 
 const mockPeer = new MockPeer(''),
@@ -37,14 +37,22 @@ const mockPeer = new MockPeer(''),
       : Math.random(),
   }
 
-function globalBindP2P(data: readyP2P = mockReadyP2P) {
-  // TODO destruct and rebuild for real private props??
-  window.p2p = data
-  dispatchEvent(new CustomEvent('p2p-update', { detail: data.peers.length > 1, bubbles: true, composed: true }))
-}
-
-// `window.p2p` should be accessible ASAP, Don't wait for element to load.
-globalBindP2P()
+let exposedP2P: readyP2P = mockReadyP2P
+Object.defineProperty(window, 'p2p', {
+  configurable: true,
+  get: () => exposedP2P,
+  // TODO destruct and rebuild `data` to remove access to the real `p2p` props?
+  set: function (data: readyP2P) {
+    if (data != exposedP2P) {
+      exposedP2P = data
+      dispatchEvent(new CustomEvent('p2p-update', {
+        detail: data.peers.length > 1,
+        bubbles: true,
+        composed: true
+      }))
+    }
+  },
+});
 
 @customElement('lit-p2p')
 export default class extends LitElement {
@@ -129,18 +137,17 @@ export default class extends LitElement {
           break
 
         case State.READY: // Bind established p2p to the global `window.p2p`
-          globalBindP2P(this.p2p)
+          p2p = this.p2p! // Don't destruct to allow easier debugging
           break
         
-        case State.LOADING:
+        case State.LOADING: // NOOPs
         case State.LOBBY:
           break
         
         default: // Disconnect & reset `window.p2p` to mocked
-          if (this.p2p) {
-            this.p2p.leaveLobby()
-            globalBindP2P()
-          }
+          this.p2p?.leaveLobby()
+          delete this.p2p
+          p2p = mockReadyP2P
           this.requestUpdate() // since render has already been called, ensure we are disconnected now.
           break
       }
