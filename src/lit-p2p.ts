@@ -152,7 +152,6 @@ export default class extends LitElement {
           try {
             this.p2p?.leaveLobby() // this will fail if still loading (timeout)
           } catch { }
-          delete this.p2p
           p2p = mockReadyP2P
           this.requestUpdate() // since render has already been called, ensure we are disconnected now.
           break
@@ -166,6 +165,7 @@ export default class extends LitElement {
     if (this.localStorage && this.name)
       localStorage.setItem(Keys.NAME, this.name)
     this.p2p?.leaveLobby()
+    this.p2p?.stateChange.cancel()
     this.connect()
   }
 
