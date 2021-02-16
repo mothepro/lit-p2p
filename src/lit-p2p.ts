@@ -121,11 +121,6 @@ export default class extends LitElement {
 
   public p2p?: P2P
 
-  static readonly styles = css`
-    :host .alone {
-      justify-content: center;
-    }`
-
   protected async updated(changed: PropertyValues) {
     if (changed.has('name'))
       // @ts-ignore Reset mock peer's name
@@ -221,11 +216,7 @@ export default class extends LitElement {
               @proposal=${this.proposal}
             >
               <slot name="p2p-lobby"></slot>
-              <slot name="p2p-alone" slot="alone">
-                <mwc-list-item part="client is-alone" class="alone" noninteractive>
-                  Waiting for others to join this lobby.
-                </mwc-list-item>
-              </slot>
+              <slot name="p2p-alone" slot="alone"></slot>
             </p2p-duo-lobby>`
             : html`
             <slot></slot>
@@ -244,20 +235,13 @@ export default class extends LitElement {
               @proposal=${this.proposal}
             >
               <slot name="p2p-lobby"></slot>
-              <slot name="p2p-alone" slot="alone">
-                <mwc-list-item part="client is-alone" class="alone" noninteractive>
-                  Waiting for others to join this lobby.
-                </mwc-list-item>
-              </slot>
+              <slot name="p2p-alone" slot="alone"></slot>
             </p2p-multi-lobby>`
 
         case State.READY:
           return html`
             <slot></slot>
-            <slot name="p2p-ready">
-              Access P2P by listening to the <code>p2p-update</code> event on the <code>document</code>
-              and use <code>window.p2p</code> to access peers.
-            </slot>`
+            <slot name="p2p-ready"></slot>`
 
         case State.OFFLINE:
           return html`
