@@ -233,7 +233,7 @@ export default class extends LitElement {
       </mwc-check-list-item>`)}${
 
     // No one else in lobby
-    this.clients.length == 1 ? html`
+    this.clients.length <= 1 ? html`
       <slot name="alone"></slot>` : ''}
     </mwc-list>
     ${this.proposal ? html`
