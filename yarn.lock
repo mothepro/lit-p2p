@@ -473,10 +473,10 @@
   resolved "https://registry.yarnpkg.com/@mothepro/emojis/-/emojis-1.2.2.tgz#dbc34c7f8a5d1d8a7f6f49872fb658489ee92903"
   integrity sha512-btKcXwReWimPOUKUUXTFwwPAP7/aZ5tzsrgZdZSIylHQ2tHtbHs2jMES5dQmWBI/kCu2o6oslQVupTNE0dR0pA==
 
-"@mothepro/fancy-p2p@^0.0.20":
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.20.tgz#2c4d0dc70461656cf4596047fbbe155cb1efd434"
-  integrity sha512-4A+pB0Nwc8anvnv3wsyvFKjNZaRMMW07nb96BYbD4pfcDG0hWue6A6i7AaUOG6EanqJ8Cylz0Z/EINYPERGzYA==
+"@mothepro/fancy-p2p@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.21.tgz#ba5c2f3bbe852342af5c60fdcf41c011a4b59ed0"
+  integrity sha512-tvlnfRjMLImciRbiwzSz+A1jmcKyCO9Y09PRHcJ5hJjDGq/Bf1NwFbFShYqcQeIwiiXBTT438+oFTPpWlhYTBA==
   dependencies:
     fancy-emitter "^2.0.0"
     simple-peer "^9.9.3"
@@ -2727,10 +2727,10 @@ normalize-url@^4.1.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.0.tgz#453354087e6ca96957bd8f5baf753f5982142129"
   integrity sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ==
 
-np@^7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/np/-/np-7.3.0.tgz#2536312801f4d4b578e8852e68475c9bb270f328"
-  integrity sha512-rbKZ7YMtdyv7k2ViAfhkcmDUimQxTMDyGs8qH3Ex2tzoxei9ZSrQUm2LkTzZ7Uwtde9pIAyud/rwsyxS4w9lDg==
+np@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/np/-/np-7.4.0.tgz#de33e07159c8d4065f42c280a7605deb88fcaf6a"
+  integrity sha512-woJn5Bodg0/VDyUWx5EHIsi+8QlKSows0AVRBt47PG++cJAVE6jQFXcXDFDBMqY5PueFc4w0SA3gxqPklk6oGg==
   dependencies:
     "@samverschueren/stream-to-observable" "^0.3.1"
     any-observable "^0.5.1"

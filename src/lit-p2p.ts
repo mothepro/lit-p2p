@@ -136,7 +136,7 @@ export default class extends LitElement {
         case State.OFFLINE: // Try to get name and reconnect to server
           if (this.localStorage && !this.name)
             this.name = (localStorage.getItem(Keys.NAME) ?? '').toString()
-          this.p2p?.leaveLobby()
+          this.p2p?.stateChange.cancel()
           this.connect()
           break
 
@@ -149,9 +149,7 @@ export default class extends LitElement {
           break
         
         default: // Disconnect & reset `window.p2p` to mocked
-          try {
-            this.p2p?.leaveLobby() // this will fail if still loading (timeout)
-          } catch { }
+          this.p2p?.stateChange.cancel()
           p2p = mockReadyP2P
           this.requestUpdate() // since render has already been called, ensure we are disconnected now.
           break
@@ -164,7 +162,6 @@ export default class extends LitElement {
     this.name = detail
     if (this.localStorage && this.name)
       localStorage.setItem(Keys.NAME, this.name)
-    this.p2p?.leaveLobby()
     this.p2p?.stateChange.cancel()
     this.connect()
   }
