@@ -473,10 +473,10 @@
   resolved "https://registry.yarnpkg.com/@mothepro/emojis/-/emojis-1.2.2.tgz#dbc34c7f8a5d1d8a7f6f49872fb658489ee92903"
   integrity sha512-btKcXwReWimPOUKUUXTFwwPAP7/aZ5tzsrgZdZSIylHQ2tHtbHs2jMES5dQmWBI/kCu2o6oslQVupTNE0dR0pA==
 
-"@mothepro/fancy-p2p@^0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.21.tgz#ba5c2f3bbe852342af5c60fdcf41c011a4b59ed0"
-  integrity sha512-tvlnfRjMLImciRbiwzSz+A1jmcKyCO9Y09PRHcJ5hJjDGq/Bf1NwFbFShYqcQeIwiiXBTT438+oFTPpWlhYTBA==
+"@mothepro/fancy-p2p@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@mothepro/fancy-p2p/-/fancy-p2p-0.0.22.tgz#34c187722e8491ff7c1be1108cb4d1843a6c9918"
+  integrity sha512-fdMTW7059OYIeVuye1Joii4dci+6W26WeUwmgc2xaWr3+QT1MZVxClPH0SHsxuWb7yKv4njY3YXcLUDuRZWW1g==
   dependencies:
     fancy-emitter "^2.0.0"
     simple-peer "^9.9.3"

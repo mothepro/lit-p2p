@@ -53,7 +53,7 @@
     "@material/mwc-list": "^0.20.0",
     "@material/mwc-snackbar": "^0.20.0",
     "@material/textfield": "^10.0.0",
-    "@mothepro/fancy-p2p": "^0.0.21",
+    "@mothepro/fancy-p2p": "^0.0.22",
     "lit-element": "^2.4.0"
   }
 }
