@@ -55,9 +55,16 @@
     ]'>
     <p>This is a slot of <code>&lt;lit-p2p&gt;</code></p>
 
+    <p>
+      Access P2P by listening to the <code>p2p-update</code> event on the <code>document</code>
+      and use <code>window.p2p</code> to access peers.
+    </p>
+
     <span class="lobby-only welcome">Welcome,</span>
     <span class="lobby-only welcome" slot="lobby">to the p2p lobby!</span>
     <hr class="lobby-only" slot="lobby" />
+
+    <b slot="p2p-ready">Connected to peers!</b>
   </lit-p2p>
 </body>
 
