@@ -1,6 +1,6 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
 import { LitElement, html, customElement, property, PropertyValues } from 'lit-element'
-import P2P, { MockPeer, State, Client } from '@mothepro/fancy-p2p'
+import P2P, { MockPeer, State } from '@mothepro/fancy-p2p'
 
 import './duo-lobby.js'
 import './multi-lobby.js'
@@ -130,7 +130,6 @@ export default class extends LitElement {
         case State.OFFLINE: // Try to get name and reconnect to server
           if (this.localStorage && !this.name)
             this.name = (localStorage.getItem(Keys.NAME) ?? '').toString()
-          this.p2p?.stateChange.cancel()
           this.connect()
           break
 
@@ -150,19 +149,12 @@ export default class extends LitElement {
       }
   }
 
-  /** Only called when the **user** changes their own name. */
-  // TODO the only reason we do this instead of in the updater is to **not** save the random servere name in local storage.
-  private saveNameAndReconnect({ detail }: NameChangeEvent) {
-    this.name = detail
-    if (this.localStorage && this.name)
-      localStorage.setItem(Keys.NAME, this.name)
-    this.p2p?.stateChange.cancel()
-    this.connect()
-  }
-
   /** Attempt to connect to the lobby */
   private async connect() {
     try {
+      // Wait for any exisiting connection to close
+      await this.p2p?.stateChange.cancel().on(() => {}).catch(() => {})
+
       this.p2p = new P2P({
         name: this.name,
         retries: this.retries,
@@ -186,6 +178,15 @@ export default class extends LitElement {
     } finally {
       this.state = -1
     }
+  }
+
+  /** Only called when the **user** changes their own name. */
+  // TODO the only reason we do this instead of in the updater is to **not** save the random server name in local storage.
+  private saveNameAndReconnect({ detail }: NameChangeEvent) {
+    this.name = detail
+    if (this.localStorage && this.name)
+      localStorage.setItem(Keys.NAME, this.name)
+    this.connect()
   }
 
   private proposal({ detail }: ProposalEvent) {
