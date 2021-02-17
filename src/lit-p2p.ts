@@ -198,6 +198,7 @@ export default class extends LitElement {
     }
   }
 
+  // TODO sometimes the lobbies are bound after the first connection has landed :/
   protected readonly render = () => {
     if (this.p2p?.stateChange.isAlive)
       switch (this.p2p.state) {

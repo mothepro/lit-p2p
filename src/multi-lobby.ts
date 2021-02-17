@@ -223,7 +223,7 @@ export default class extends LitElement {
       </span>`
 
     // In between
-    }<slot></slot>${this.clients.length > 1
+    }<slot></slot>${this.clients.filter(({ isYou }) => !isYou).length >= 1 // this.clients.length > 1
 
     // List of peers
     ? html`
