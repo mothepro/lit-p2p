@@ -1,7 +1,6 @@
 import type { NameChangeEvent, ProposalEvent } from './duo-lobby.js'
-import { LitElement, html, customElement, property, PropertyValues, css } from 'lit-element'
-import P2P, { State } from '@mothepro/fancy-p2p'
-import { MockPeer } from '@mothepro/fancy-p2p/dist/esm/src/Peer.js'
+import { LitElement, html, customElement, property, PropertyValues } from 'lit-element'
+import P2P, { MockPeer, State, Client } from '@mothepro/fancy-p2p'
 
 import './duo-lobby.js'
 import './multi-lobby.js'

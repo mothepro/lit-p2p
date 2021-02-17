@@ -140,8 +140,13 @@ export default class extends LitElement {
       : html`
       <span part="is-you can-not-edit">
         ${this.name}
-      </span>`}
-    <slot></slot>
+      </span>`
+        
+    // In between
+    }<slot></slot>${this.clients.length > 1
+
+    // List of peers
+    ? html`
     <mwc-list
       part="client-list"
       rootTabbable
@@ -175,11 +180,9 @@ export default class extends LitElement {
         : this.groupExists!(client)
           ? html`<mwc-icon part="waiting" slot="meta">hourglass_empty</mwc-icon>`
           : html`<mwc-icon part="invite" slot="meta">add_circle</mwc-icon>`}
-        </mwc-list-item>`)}${
-
-
-    // No one else in lobby
-    this.clients.length <= 1 ? html`
-      <slot name="alone"></slot>` : ''}
+        </mwc-list-item>`)}
     </mwc-list>`
+
+    // All alone
+    : html`<slot name="alone"></slot>`}`
 }

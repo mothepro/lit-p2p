@@ -220,8 +220,13 @@ export default class extends LitElement {
       : html`
       <span part="is-you can-not-edit">
         ${this.name}
-      </span>`}
-    <slot></slot>
+      </span>`
+
+    // In between
+    }<slot></slot>${this.clients.length > 1
+
+    // List of peers
+    ? html`
     <mwc-list
       part="client-list"
       multi
@@ -230,13 +235,14 @@ export default class extends LitElement {
     >${this.clients.filter(({ isYou }) => !isYou).map(({ name }) => html`
       <mwc-check-list-item part="client is-other">
         ${name}
-      </mwc-check-list-item>`)}${
+      </mwc-check-list-item>`)}
+    </mwc-list>`
 
-    // No one else in lobby
-    this.clients.length <= 1 ? html`
-      <slot name="alone"></slot>` : ''}
-    </mwc-list>
-    ${this.proposal ? html`
+    // All alone
+    : html`<slot name="alone"></slot>`
+    
+    // Proposal
+    }${this.proposal ? html`
       <mwc-snackbar
         open
         id="active-proposal"
