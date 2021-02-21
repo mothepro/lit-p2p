@@ -148,6 +148,8 @@ export default class extends LitElement {
           this.requestUpdate() // since render has already been called, ensure we are disconnected now.
           break
       }
+    else if (changed.has('lobby') || changed.has('signaling') || changed.has('version'))
+      this.connect()
   }
 
   /** Attempt to connect to the lobby */
