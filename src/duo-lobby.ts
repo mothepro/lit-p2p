@@ -64,6 +64,10 @@ export default class extends LitElement {
     
     :host mwc-icon-button[part="reject"] {
       margin-right: var(--mdc-icon-button-size, 48px);
+    }
+    
+    :host mwc-icon-button[slot="action"] {
+      color: rgba(255, 255, 255, 0.87);
     }`
 
   protected async updated(changed: Map<string | number | symbol, unknown>) {

@@ -99,6 +99,10 @@ export default class extends LitElement {
       --mdc-ripple-fg-opacity: 0;
       cursor: default !important;
       pointer-events: none;
+    }
+    
+    :host mwc-icon-button[slot="action"] {
+      color: rgba(255, 255, 255, 0.87);
     }`
 
   protected async updated(changed: Map<string | number | symbol, unknown>) {
