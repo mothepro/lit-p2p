@@ -40,6 +40,5 @@ Inline demo for webcomponents.org
 
 TODO
 + Better docs API
-+ Usable Demo
 + Improve method for passing `READY` state data to `<slot>`
 + Show who ack'd proposal

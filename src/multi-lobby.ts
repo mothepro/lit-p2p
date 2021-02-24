@@ -101,8 +101,12 @@ export default class extends LitElement {
       pointer-events: none;
     }
     
+    /*
+     * Doesn't suport icon buttons... for some reason.
+     * https://github.com/material-components/material-components-web-components/blob/master/packages/snackbar/mwc-snackbar.scss
+     */
     :host mwc-icon-button[slot="action"] {
-      color: rgba(255, 255, 255, 0.87);
+      color: var(--mdc-snackbar-action-color, rgba(255, 255, 255, 0.87));
     }`
 
   protected async updated(changed: Map<string | number | symbol, unknown>) {
