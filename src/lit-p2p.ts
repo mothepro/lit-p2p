@@ -149,7 +149,9 @@ export default class extends LitElement {
           break
       }
     else if (changed.has('lobby') || changed.has('signaling') || changed.has('version'))
-      this.connect()
+      // Only reconnect if we are using the signaling server
+      if (this.state == State.OFFLINE || this.state == State.LOBBY)
+        this.connect()
   }
 
   /** Attempt to connect to the lobby */
