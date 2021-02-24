@@ -89,17 +89,6 @@ export default class extends LitElement {
     :host([hidden]) {
       display: none;
     }
-
-    :host mwc-fab[disabled] { /** How is this not supported natively?? */
-      --mdc-theme-on-secondary: white;
-      --mdc-theme-secondary: lightgrey;
-      --mdc-fab-box-shadow: none;
-      --mdc-fab-box-shadow-hover: none;
-      --mdc-fab-box-shadow-active: none;
-      --mdc-ripple-fg-opacity: 0;
-      cursor: default !important;
-      pointer-events: none;
-    }
     
     /*
      * Doesn't suport icon buttons... for some reason.
@@ -262,7 +251,7 @@ export default class extends LitElement {
           <mwc-icon-button slot="dismiss" icon="close" label="reject"></mwc-icon-button>` : ''}
       </mwc-snackbar>` : ''}
     <mwc-fab
-      part="make-group"
+      part="make-group ${!this.canPropose && 'mwc-fab-disabled'}"
       icon="done"
       ?disabled=${!this.canPropose}
       label="Make Group"

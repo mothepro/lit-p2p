@@ -187,6 +187,7 @@ export default class extends LitElement {
 
   /** Only called when the **user** changes their own name. */
   // TODO the only reason we do this instead of in the updater is to **not** save the random server name in local storage.
+  // this prevents name changes in attribute from reconnecting
   private saveNameAndReconnect({ detail }: NameChangeEvent) {
     this.name = detail
     if (this.localStorage && this.name)
@@ -228,7 +229,7 @@ export default class extends LitElement {
             <slot></slot>
             <p2p-multi-lobby
               part="lobby"
-              exportparts="client-list , client , is-you , is-other , can-edit , can-not-edit , name-input , make-group"
+              exportparts="client-list , client , is-you , is-other , can-edit , can-not-edit , name-input , make-group , mwc-fab-disabled"
               name=${this.name}
               timeout=${this.proposalTimeout}
               maxlength=${this.maxlength}
